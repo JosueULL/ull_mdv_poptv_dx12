@@ -35,6 +35,9 @@
     <ClCompile Include="..\src\Component.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\DX12InstanceBuffer.h">
+      <Filter>Backends\DX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ImageIO.h" />

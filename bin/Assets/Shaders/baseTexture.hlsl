@@ -1,6 +1,11 @@
-cbuffer PerFrameConstants : register (b0)
+cbuffer CameraConstants : register (b0)
 {
-	float4 scale;
+	float4x4 mView;
+	float4x4 mProj;
+}
+cbuffer ObjectConstants : register (b1)
+{
+	float4x4 mWorld;
 }
 
 struct VertexShaderOutput
@@ -15,18 +20,17 @@ VertexShaderOutput VS_main(
 {
 	VertexShaderOutput output;
 
-	output.position = position;
-	//output.position.xy *= scale.x;
+	float4x4 mvp = mul(mProj, mul(mView, mWorld));	output.position = mul(mvp, float4(position.xyz, 1));
 	output.uv = uv;
 
 	return output;
 }
 
-Texture2D<float4> tex : register(t0);
+Texture2D<float4> anteruTexture : register(t0);
 SamplerState texureSampler      : register(s0);
 
-float4 PS_main (float4 position : SV_POSITION,
-				float2 uv : TEXCOORD) : SV_TARGET
+float4 PS_main(float4 position : SV_POSITION,
+	float2 uv : TEXCOORD) : SV_TARGET
 {
-	return tex.Sample (texureSampler, uv);
+	return anteruTexture.Sample(texureSampler, uv);
 }

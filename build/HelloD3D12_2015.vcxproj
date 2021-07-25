@@ -138,6 +138,7 @@
     <ClCompile Include="..\src\Component.cpp" />
     <ClCompile Include="..\src\D3D12AnimatedQuad.cpp" />
     <ClCompile Include="..\src\D3D12Quad.cpp" />
+    <ClCompile Include="..\src\DX12InstanceBuffer.h" />
     <ClCompile Include="..\src\DX12Renderer.cpp" />
     <ClCompile Include="..\src\D3D12TexturedQuad.cpp" />
     <ClCompile Include="..\src\FPCameraCtrlComponent.cpp" />

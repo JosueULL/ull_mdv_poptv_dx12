@@ -29,6 +29,8 @@
 #include "Shaders.h"
 #include <algorithm>
 #include <combaseapi.h>
+#include <fstream>
+#include <string>
 
 #include "DX12MeshBuffer.h"
 #include "DX12Texture.h"
@@ -221,7 +223,6 @@ void DX12Renderer::Render(const FrameGraph* frameGraph)
 		commandList->IASetIndexBuffer(&meshBuffer.indexBufferView);
 		commandList->DrawIndexedInstanced(meshBuffer.indexCount, 1, 0, 0, 0);
 	}
-
 
 	FinalizeRender();
 
@@ -572,18 +573,22 @@ void DX12Renderer::CreatePipelineStateObject()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 
+	std::ifstream ifs("Assets/Shaders/baseTexture.hlsl");
+	std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+	const char* sc = content.c_str();
+	
 	static const D3D_SHADER_MACRO macros[] = {
-		{ "D3D12_SAMPLE_TEXTURE", "1" },
+	//	{ "D3D12_SAMPLE_TEXTURE", "1" },
 		{ nullptr, nullptr }
 	};
 
 	ComPtr<ID3DBlob> vertexShader;
-	D3DCompile(Shaders, sizeof(Shaders),
+	D3DCompile(sc, strlen(sc),
 		"", macros, nullptr,
 		"VS_main", "vs_5_0", 0, 0, &vertexShader, nullptr);
 
 	ComPtr<ID3DBlob> pixelShader;
-	D3DCompile(Shaders, sizeof(Shaders),
+	D3DCompile(sc, strlen(sc),
 		"", macros, nullptr,
 		"PS_main", "ps_5_0", 0, 0, &pixelShader, nullptr);
 
@@ -630,10 +635,10 @@ void DX12Renderer::CreateRootSignature()
 	CD3DX12_DESCRIPTOR_RANGE range{ D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0 };
 	parameters[0].InitAsDescriptorTable(1, &range);
 
-	// Our constant buffer view (object)
+	// Our constant buffer view (object data)
 	parameters[1].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
-	// Our constant buffer view (camera)
+	// Our constant buffer view (camera data)
 	parameters[2].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 	
 	// We don't use another descriptor heap for the sampler, instead we use a

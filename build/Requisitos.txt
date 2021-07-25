@@ -1,14 +1,16 @@
 1- Añadir camara con controller
 
-
 2- Añadir instancing rendering
 3- Move instances
 4- Pickup objects
-5- Load meshes?
-3- Añadir UI y Timer (https://www.braynzarsoft.net/viewtutorial/q16390-11-drawing-text-in-directx-12)
-5- Move shaders to files
-6- Move scene to files
-7- Write docs
+5- Añadir UI y Timer (https://www.braynzarsoft.net/viewtutorial/q16390-11-drawing-text-in-directx-12)
+6- Write docs
+
+NICE TO HAVE
+- Improve memory layout
+- Add lighting?
+- Load meshes?
+- Move scene to files?
 
 REQUISITOS
 ----------
