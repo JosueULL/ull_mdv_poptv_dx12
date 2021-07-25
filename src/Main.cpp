@@ -29,9 +29,12 @@ int WinMain (
 	_In_ int       /* nCmdShow */
 	)
 {
-	auto& system = System::instance();
-	system.Init(hInstance);
-	system.Run();
+
+	{
+		auto& system = System::instance();
+		system.Init(hInstance);
+		system.Run();
+	}
 
 	return 0;
 }

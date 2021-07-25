@@ -22,7 +22,7 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
  }
 
  Scene::~Scene() {
-	 // TODO - Free the scene GraphicResources
+	 sceneRes_.ReleaseAll();
 	 objects_.clear();
  }
 
@@ -34,6 +34,7 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 d.Data = new MeshQuad();
 	 d.Type = GraphicResourceDesc::ResourceType::Mesh;
 	 sceneRes_.Graphics.push_back(d);
+
 
 	 // Cube Mesh
 	 d = GraphicResourceDesc();
@@ -56,7 +57,6 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 
 	 return newObj;
  }
-
 
  Camera* Scene::AddCamera(std::string id) {
 	 SceneObject* newObj = new SceneObject(id);

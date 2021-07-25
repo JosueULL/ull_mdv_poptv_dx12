@@ -1,13 +1,14 @@
 #pragma once
 
 #include <vector>
+#include <glm/glm.hpp>
 
 using namespace std;
 
 struct Vertex
 {
-	float position[3];
-	float uv[2];
+	glm::vec3 position;
+	glm::vec2 uv;
 };
 
 
@@ -16,4 +17,9 @@ class Mesh
 public:
 	vector<Vertex> vertices;
 	vector<int> indices;
+
+	virtual ~Mesh() {
+		vertices.clear();
+		indices.clear();
+	}
 };

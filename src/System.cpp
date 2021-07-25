@@ -92,4 +92,10 @@ void System::ProcessMessageQueue()
 void System::Shutdown()
 {
 	backEndRenderer_->Shutdown();
+	
+	backEndRenderer_.reset();
+	frontEndRenderer_.reset();
+	window_.reset();
+	scene_.reset();
+	keyboard_.reset();
 }

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "windows.h"
 #define _CRTDBG_MAP_ALLOC //to get more details
+
+#include "windows.h"
 #include <crtdbg.h>   //for malloc and free
 
 class MemoryLeakDetector 
