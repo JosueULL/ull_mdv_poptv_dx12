@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\ImageIO.cpp" />
+    <ClCompile Include="..\src\Main.cpp" />
+    <ClCompile Include="..\src\Utility.cpp" />
+    <ClCompile Include="..\src\Window.cpp" />
+    <ClCompile Include="..\src\DX12Renderer.cpp">
+      <Filter>DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\D3D12AnimatedQuad.cpp">
+      <Filter>DX12\Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\D3D12Quad.cpp">
+      <Filter>DX12\Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\D3D12TexturedQuad.cpp">
+      <Filter>DX12\Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene.cpp" />
+    <ClCompile Include="..\src\System.cpp" />
+    <ClCompile Include="..\src\FrameGraph.h" />
+    <ClCompile Include="..\src\FrontEndRenderer.cpp" />
+    <ClCompile Include="..\src\SceneObject.cpp" />
+    <ClCompile Include="..\src\TestScene.cpp" />
+    <ClCompile Include="..\src\Transform.cpp" />
+    <ClCompile Include="..\src\MeshCube.h" />
+    <ClCompile Include="..\src\Keyboard.cpp" />
+    <ClCompile Include="..\src\Camera.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\ImageIO.h" />
+    <ClInclude Include="..\src\RubyTexture.h" />
+    <ClInclude Include="..\src\Shaders.h" />
+    <ClInclude Include="..\src\Utility.h" />
+    <ClInclude Include="..\src\Window.h" />
+    <ClInclude Include="..\src\DX12Renderer.h">
+      <Filter>DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\D3D12AnimatedQuad.h">
+      <Filter>DX12\Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\D3D12Quad.h">
+      <Filter>DX12\Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\D3D12TexturedQuad.h">
+      <Filter>DX12\Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DX12Texture.h">
+      <Filter>DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DX12MeshBuffer.h">
+      <Filter>DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DX12ConstantBuffer.h">
+      <Filter>DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3dx12.h">
+      <Filter>DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ConstantBufferDef.h" />
+    <ClInclude Include="..\src\GraphicResourceDesc.h" />
+    <ClInclude Include="..\src\Mesh.h" />
+    <ClInclude Include="..\src\MeshQuad.h" />
+    <ClInclude Include="..\src\Scene.h" />
+    <ClInclude Include="..\src\SceneResourcesDesc.h" />
+    <ClInclude Include="..\src\System.h" />
+    <ClInclude Include="..\src\Texture.h" />
+    <ClInclude Include="..\src\MemoryLeakDetector.h" />
+    <ClInclude Include="..\src\SceneObject.h" />
+    <ClInclude Include="..\src\TestScene.h" />
+    <ClInclude Include="..\src\Material.h" />
+    <ClInclude Include="..\src\FrontEndRenderer.h" />
+    <ClInclude Include="..\src\Transform.h" />
+    <ClInclude Include="..\src\Keyboard.h" />
+    <ClInclude Include="..\src\Singleton.h" />
+    <ClInclude Include="..\src\Camera.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Component.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MeshRendererComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Requisitos.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="DX12">
+      <UniqueIdentifier>{904ff9f1-fe71-447e-9fad-7f16a510ca4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DX12\Examples">
+      <UniqueIdentifier>{4c9504b5-3a84-4932-9083-10dda3b8e623}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{5730b3af-b89d-48ca-9edd-7d277a4ad0e0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

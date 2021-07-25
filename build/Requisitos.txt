@@ -1,0 +1,32 @@
+
+1- Añadir camara con controller
+2- Añadir instancing rendering
+3- Move instances
+4- Pickup objects
+5- Load meshes?
+3- Añadir UI y Timer (https://www.braynzarsoft.net/viewtutorial/q16390-11-drawing-text-in-directx-12)
+5- Move shaders to files
+6- Move scene to files
+7- Write docs
+
+REQUISITOS
+----------
+- Pequeño prototipo donde el jugador debe obtener objetos
+- Añadir un HUD para pintar información
+
+ENTREGABLES
+-----------
+- Proyecto
+- Informe explicando el código
+	- Como se ha usado DX12
+	- Gestión de recursos del frame
+	- Uso de patrones
+
+MEJORAS
+----------
+- Mejoras de código
+- Mejoras de shaders
+- Uso de patrones
+- Objetos dinámicos
+- Escenario estático con colisiones
+- Mejoras en el movimiento de personaje
