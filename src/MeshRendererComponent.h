@@ -12,7 +12,7 @@ private:
     std::shared_ptr<Material> material_;
 
 public:
-
+    
     MeshRendererComponent() = delete;
     MeshRendererComponent(const MeshRendererComponent&) = delete;
 

@@ -7,8 +7,14 @@ void Transform::UpdateModel() {
 	mModel_ = glm::translate(mModel_, position_);
 	mModel_ = glm::scale(mModel_, scale_);
 
-	glm::quat rotQuat = glm::quat(glm::radians(rotation_));
-	mModel_ *= glm::toMat4(rotQuat);
+	UpdateRotation();
+	mModel_ *= mRotation_;
 	
 	dirty_ = false;
+}
+
+void Transform::UpdateRotation()
+{
+	glm::quat rotQuat = glm::quat(glm::radians(rotation_));
+	mRotation_ = glm::toMat4(rotQuat);
 }

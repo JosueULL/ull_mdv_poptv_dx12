@@ -1,5 +1,6 @@
-
 1- Añadir camara con controller
+
+
 2- Añadir instancing rendering
 3- Move instances
 4- Pickup objects

@@ -6,7 +6,6 @@
 #include "Singleton.h"
 
 class Scene;
-class Window;
 class Keyboard;
 class FrontEndRenderer;
 
@@ -18,6 +17,7 @@ public:
 	void Init(HINSTANCE hInstance);
 	void Run();
 
+	AMD::Window* GetWindow() { return window_.get(); }
 	Keyboard* GetKeyboard() { return keyboard_.get(); }
 
 private:

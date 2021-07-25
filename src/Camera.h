@@ -15,10 +15,7 @@ public:
 		glm::mat4 proj;
 	};
 
-	Camera() = delete;
-	Camera(const Camera&) = delete;
-
-	explicit Camera(SceneObject* owner);
+	COMPONENT_BASE(Camera)
 
 	ConstantBuffer* GetCBuffer() {
 		return cBuffer_.get();
@@ -27,6 +24,8 @@ public:
 	ConstantBufferDef* GetCBufferDef() {
 		return cBufferDef_.get();
 	}
+
+	void Update() override;
 
 private:
 	std::unique_ptr<ConstantBuffer> cBuffer_;
