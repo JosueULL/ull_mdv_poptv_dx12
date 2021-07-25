@@ -8,7 +8,7 @@ Camera::Camera(SceneObject* owner) :
 	cBuffer_(std::make_unique<ConstantBuffer>()),
 	cBufferDef_(std::make_unique<ConstantBufferDef>())
 {
-	AMD::Window* window = System::instance().GetWindow();
+	Window* window = System::instance().GetWindow();
 	cBuffer_.get()->view = glm::mat4();
 	cBuffer_.get()->proj = glm::perspectiveFovLH_ZO(glm::radians(45.0f), (float)window->GetWidth(), (float)window->GetHeight(), 0.1f, 1000.0f); //glm::orthoLH_ZO(-10.f, 10.f, -5.f, 5.f, 0.1f, 1000.0f);
 	

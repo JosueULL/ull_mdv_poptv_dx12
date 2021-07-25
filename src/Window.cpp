@@ -22,7 +22,6 @@
 
 #include "Window.h"
 
-namespace AMD {
 namespace {
 ///////////////////////////////////////////////////////////////////////////////
 LRESULT CALLBACK amdWndProc(
@@ -131,5 +130,4 @@ WindowClass::~WindowClass()
 {
     ::UnregisterClassA(name_.c_str(),
         (HINSTANCE)::GetModuleHandle(NULL));
-}
 }

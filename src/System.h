@@ -1,12 +1,13 @@
 #pragma once
 
 #include <memory>
-#include "DX12Renderer.h"
-#include "MemoryLeakDetector.h"
 #include "Singleton.h"
+#include "MemoryLeakDetector.h"
 
 class Scene;
+class Window;
 class Keyboard;
+class DX12Renderer;
 class FrontEndRenderer;
 
 class System : public Singleton<System>
@@ -17,7 +18,7 @@ public:
 	void Init(HINSTANCE hInstance);
 	void Run();
 
-	AMD::Window* GetWindow() { return window_.get(); }
+	Window* GetWindow() { return window_.get(); }
 	Keyboard* GetKeyboard() { return keyboard_.get(); }
 
 private:
@@ -25,8 +26,8 @@ private:
 	void ProcessMessageQueue();
 
 	std::unique_ptr<FrontEndRenderer> frontEndRenderer_;
-	std::unique_ptr<AMD::DX12Renderer> backEndRenderer_;
-	std::unique_ptr<AMD::Window> window_;
+	std::unique_ptr<DX12Renderer> backEndRenderer_;
+	std::unique_ptr<Window> window_;
 	std::unique_ptr<Scene> scene_;
 	std::unique_ptr<Keyboard> keyboard_;
 

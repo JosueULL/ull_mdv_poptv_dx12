@@ -102,10 +102,7 @@
     <ClInclude Include="..\src\Camera.h" />
     <ClInclude Include="..\src\Component.h" />
     <ClInclude Include="..\src\ConstantBufferDef.h" />
-    <ClInclude Include="..\src\D3D12AnimatedQuad.h" />
-    <ClInclude Include="..\src\D3D12Quad.h" />
     <ClInclude Include="..\src\DX12Renderer.h" />
-    <ClInclude Include="..\src\D3D12TexturedQuad.h" />
     <ClInclude Include="..\src\DX12ConstantBuffer.h" />
     <ClInclude Include="..\src\FPCameraCtrlComponent.h" />
     <ClInclude Include="..\src\FrontEndRenderer.h" />
@@ -123,7 +120,6 @@
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\SceneObject.h" />
     <ClInclude Include="..\src\SceneResourcesDesc.h" />
-    <ClInclude Include="..\src\Shaders.h" />
     <ClInclude Include="..\src\Singleton.h" />
     <ClInclude Include="..\src\System.h" />
     <ClInclude Include="..\src\TestScene.h" />
@@ -136,11 +132,8 @@
   <ItemGroup>
     <ClCompile Include="..\src\Camera.cpp" />
     <ClCompile Include="..\src\Component.cpp" />
-    <ClCompile Include="..\src\D3D12AnimatedQuad.cpp" />
-    <ClCompile Include="..\src\D3D12Quad.cpp" />
     <ClCompile Include="..\src\DX12InstanceBuffer.h" />
     <ClCompile Include="..\src\DX12Renderer.cpp" />
-    <ClCompile Include="..\src\D3D12TexturedQuad.cpp" />
     <ClCompile Include="..\src\FPCameraCtrlComponent.cpp" />
     <ClCompile Include="..\src\FrameGraph.h" />
     <ClCompile Include="..\src\FrontEndRenderer.cpp" />

@@ -42,8 +42,6 @@ struct DX12MeshBuffer;
 struct DX12Texture;
 struct DX12ConstantBuffer;
 
-namespace AMD {
-
 class Window;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -129,6 +127,5 @@ private:
 	std::unordered_map<std::string, DX12Texture> resTextures_;
 	std::unordered_map<std::string, DX12ConstantBuffer> resConstantBuffers_;
 };
-}
 
 #endif

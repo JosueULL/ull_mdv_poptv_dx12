@@ -26,7 +26,6 @@
 #include "d3dx12.h"
 #include <iostream>
 #include <d3dcompiler.h>
-#include "Shaders.h"
 #include <algorithm>
 #include <combaseapi.h>
 #include <fstream>
@@ -51,7 +50,7 @@
 
 using namespace Microsoft::WRL;
 
-namespace AMD {
+
 namespace {
 struct RenderEnvironment
 {
@@ -660,8 +659,5 @@ void DX12Renderer::CreateRootSignature()
 	device_->CreateRootSignature(0,
 		rootBlob->GetBufferPointer(),
 		rootBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
-
-}
-
 
 }

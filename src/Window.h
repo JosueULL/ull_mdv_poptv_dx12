@@ -27,7 +27,6 @@
 #include <Windows.h>
 #include <memory>
 
-namespace AMD {
 /**
 * Encapsulate a window class.
 *
@@ -104,6 +103,5 @@ private:
 	bool isClosed_ = false;
 	int width_ = -1, height_ = -1;
 };
-}
 
 #endif

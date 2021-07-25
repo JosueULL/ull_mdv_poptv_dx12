@@ -3,8 +3,8 @@
 #include "Keyboard.h"
 #include "FrameGraph.h"
 #include "TestScene.h"
+#include "DX12Renderer.h"
 #include "FrontEndRenderer.h"
-
 
 #define APPNAME "Programación Optimizada : Proyecto final"
 #define SCREENW 1280
@@ -34,9 +34,9 @@ System::~System()
 void System::Init(HINSTANCE hInstance)
 {
 	hInstance_ = hInstance;
-	window_.reset(new AMD::Window(hInstance_, APPNAME, SCREENW, SCREENH));
+	window_.reset(new Window(hInstance_, APPNAME, SCREENW, SCREENH));
 
-	backEndRenderer_.reset(new AMD::DX12Renderer);
+	backEndRenderer_.reset(new DX12Renderer);
 	backEndRenderer_->Initialize(*window_);
 
 	TestScene* scene = new TestScene();
