@@ -5,6 +5,7 @@
 #include "Material.h"
 #include "SceneObject.h"
 #include "MeshRendererComponent.h"
+#include "InstancedMeshRendererComponent.h"
 #include "FPCameraCtrlComponent.h"
 
 TestScene::TestScene() : Scene()
@@ -34,6 +35,27 @@ TestScene::TestScene() : Scene()
 	mrc->SetMesh(BuiltInRes::Mesh::Cube);
 	mrc->SetMaterial(mat2);
 
+
+	// ------------------------- Instantiated mesh
+	struct InstanceBuffer {
+		InstancedMeshRendererComponent::InstanceData instanceData[3];
+	};
+
+	InstanceBuffer* iBuffer = new InstanceBuffer();
+	iBuffer->instanceData[0] = { glm::translate(glm::mat4(1.0f), glm::vec3(1.0f)) };
+	iBuffer->instanceData[1] = { glm::translate(glm::mat4(1.0f), glm::vec3(2.0f)) };
+	iBuffer->instanceData[2] = { glm::translate(glm::mat4(1.0f), glm::vec3(3.0f)) };
+	
+	InstanceBufferDef* iBufferDef =AddInstanceBuffer("instanceBuffer", iBuffer, 3, sizeof(InstanceBuffer));
+
+	SceneObject* so3 = AddObject("inst1");
+	MeshRendererComponent* imrc = so3->AddComponent<MeshRendererComponent>();
+	imrc->SetMesh(BuiltInRes::Mesh::Cube);
+	imrc->SetMaterial(mat2);
+	imrc->SetInstanceBuffer(iBufferDef);
+
+	// ------------------------ End 
+	
 	Camera* cam = AddCamera("mainCam");
 	cam->GetSceneObject()->AddComponent<FPCameraCtrlComponent>();
 }

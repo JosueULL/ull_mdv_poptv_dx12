@@ -8,7 +8,8 @@ public:
 	enum class ResourceType {
 		Mesh,
 		Texture,
-		ConstantBuffer
+		ConstantBuffer,
+		InstanceBuffer,
 	};
 
 	std::string Id;

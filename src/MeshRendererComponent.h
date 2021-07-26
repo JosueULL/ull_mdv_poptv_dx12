@@ -2,14 +2,14 @@
 
 #include "Component.h"
 #include "Material.h"
+#include "InstanceBufferDef.h"
 
 #include <string>
 #include <memory>
 
+
+
 class MeshRendererComponent : public Component {
-private:
-	std::string meshId_;
-    std::shared_ptr<Material> material_;
 
 public:
     
@@ -18,7 +18,9 @@ public:
 
 
     explicit MeshRendererComponent(SceneObject* owner) : Component(owner),
-        meshId_()
+        meshId_(),
+        material_(nullptr),
+        instanceBufferDef_(nullptr)
     {
     }
 
@@ -41,4 +43,17 @@ public:
     Material* GetMaterial() {
         return material_.get();
     }
+
+    void SetInstanceBuffer(InstanceBufferDef* buffer) {
+        instanceBufferDef_ = buffer;
+    }
+
+    InstanceBufferDef* GetInstanceBuffer() {
+        return instanceBufferDef_;
+    }
+
+private:
+    std::string meshId_;
+    std::shared_ptr<Material> material_;
+    InstanceBufferDef* instanceBufferDef_;
 };

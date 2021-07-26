@@ -76,11 +76,9 @@ public:
 		meshBuffer.uploadBuffer->Unmap(0, nullptr);
 
 		// Copy data from upload buffer on CPU into the index/vertex buffer on 
-		// the GPU
-		uploadCommandList->CopyBufferRegion(meshBuffer.vertexBuffer.Get(), 0,
-			meshBuffer.uploadBuffer.Get(), 0, sizeOfVertices);
-		uploadCommandList->CopyBufferRegion(meshBuffer.indexBuffer.Get(), 0,
-			meshBuffer.uploadBuffer.Get(), sizeOfVertices, sizeOfIndices);
+		// the GPU (upload->default)
+		uploadCommandList->CopyBufferRegion(meshBuffer.vertexBuffer.Get(), 0, meshBuffer.uploadBuffer.Get(), 0, sizeOfVertices);
+		uploadCommandList->CopyBufferRegion(meshBuffer.indexBuffer.Get(), 0, meshBuffer.uploadBuffer.Get(), sizeOfVertices, sizeOfIndices);
 
 		// Barriers, batch them together
 		const CD3DX12_RESOURCE_BARRIER barriers[2] = {

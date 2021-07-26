@@ -28,8 +28,10 @@ class FrameGraph {
 public:
 	FrameGraphCamera RenderCam;
 	std::vector<FrameGraphMesh> Meshes;
+	std::vector<FrameGraphMesh> InstancedMeshes;
 
 	void Clear() {
 		Meshes.clear();
+		InstancedMeshes.clear();
 	}
 };

@@ -15,16 +15,16 @@ void FPCameraCtrlComponent::Update() {
 	glm::vec3 pos = transform->GetLocalPosition();
 	
 	if (kb->IsKeyHeld('W')) {
-		pos += transform->GetForward() * 0.01f;
+		pos += transform->GetForward() * 0.025f;
 	}
 	if (kb->IsKeyHeld('S')) {
-		pos -= transform->GetForward() * 0.01f;
+		pos -= transform->GetForward() * 0.025f;
 	}
 	if (kb->IsKeyHeld('A')) {
-		rot.y -= 1.0f;
+		rot.y -= 2.5f;
 	}
 	if (kb->IsKeyHeld('D')) {
-		rot.y += 1.0f;
+		rot.y += 2.5f;
 	}
 
 	transform->SetLocalPosition(pos);

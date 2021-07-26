@@ -40,7 +40,9 @@ struct FrameGraphCBuffer;
 
 struct DX12MeshBuffer;
 struct DX12Texture;
-struct DX12ConstantBuffer;
+struct DX12Buffer;
+struct DX12InstanceBuffer;
+struct DX12RenderState;
 
 class Window;
 
@@ -90,11 +92,8 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> renderTargetDescriptorHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> depthStencilDescriptorHeap_;
 
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> pso_;
-
+	
 	virtual void InitializeImpl (ID3D12GraphicsCommandList* uploadCommandList);
-	virtual void RenderImpl (ID3D12GraphicsCommandList* commandList);
 	
 private:
 	
@@ -106,7 +105,7 @@ private:
 	void CreateAllocatorsAndCommandLists ();
 	void CreateViewportScissor (const Window& window);
 	void CreateRootSignature();
-	void CreatePipelineStateObject();
+	void CreateRootSignature2();
 
 	void SetupSwapChain ();
 	void SetupRenderTargets ();
@@ -119,13 +118,18 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocators_[QUEUE_SLOT_COUNT];
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandLists_[QUEUE_SLOT_COUNT];
 
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignatureInstancing_;
+
 	int currentBackBuffer_ = 0;
 	
 	std::int32_t renderTargetViewDescriptorSize_;
 
 	std::unordered_map<std::string, DX12MeshBuffer> resMeshBuffers_;
 	std::unordered_map<std::string, DX12Texture> resTextures_;
-	std::unordered_map<std::string, DX12ConstantBuffer> resConstantBuffers_;
+	std::unordered_map<std::string, DX12Buffer> resConstantBuffers_;
+	std::unordered_map<std::string, DX12InstanceBuffer> resInstanceBuffers_;
+	std::unordered_map<std::string, DX12RenderState> resRenderStates_;
 };
 
 #endif

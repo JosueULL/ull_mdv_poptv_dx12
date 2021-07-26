@@ -9,7 +9,7 @@ struct DX12Texture {
 	Microsoft::WRL::ComPtr<ID3D12Resource>	uploadBuffer;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>  srvDescriptorHeap;
 
-	static DX12Texture Create(ID3D12Device* device, const Texture &texture, ID3D12GraphicsCommandList* uploadCommandList) {
+	static DX12Texture Create(ID3D12Device* device, const Texture &texture, ID3D12GraphicsCommandList* uploadCommandList, std::string name) {
 		DX12Texture dx12texture;
 
 		D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
@@ -61,8 +61,12 @@ struct DX12Texture {
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 		shaderResourceViewDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-		device->CreateShaderResourceView(dx12texture.image.Get(), &shaderResourceViewDesc,
-			dx12texture.srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+		device->CreateShaderResourceView(dx12texture.image.Get(), &shaderResourceViewDesc, dx12texture.srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+
+		std::string tName = "Texture ";
+		tName.append(name);
+		dx12texture.image->SetName(std::wstring(tName.begin(), tName.end()).c_str());
 
 		return dx12texture;
 	}

@@ -9,7 +9,6 @@
 #include "Texture.h"
 #include "ConstantBufferDef.h"
 #include "ImageIO.h"
-#include "RubyTexture.h"
 
 const std::string BuiltInRes::Mesh::Quad = "BuiltIn/Mesh/Quad";
 const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
@@ -34,7 +33,6 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 d.Data = new MeshQuad();
 	 d.Type = GraphicResourceDesc::ResourceType::Mesh;
 	 sceneRes_.Graphics.push_back(d);
-
 
 	 // Cube Mesh
 	 d = GraphicResourceDesc();
@@ -73,7 +71,6 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 return cam;
  }
 
-
  void Scene::AddTexture(std::string id, std::string path) {
 	 GraphicResourceDesc d2 = GraphicResourceDesc();
 	 Texture* texture = new Texture();
@@ -82,6 +79,22 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 d2.Data = texture;
 	 d2.Type = GraphicResourceDesc::ResourceType::Texture;
 	 sceneRes_.Graphics.push_back(d2);
+ }
+
+ InstanceBufferDef* Scene::AddInstanceBuffer(std::string id, void* data, int count, int size) {
+	 InstanceBufferDef* bufferDef = new InstanceBufferDef();
+	 bufferDef->id = id;
+	 bufferDef->ptr = data;
+	 bufferDef->instanceCount = count;
+	 bufferDef->size = size;
+
+	 GraphicResourceDesc gr = GraphicResourceDesc();
+	 gr.Id = bufferDef->id;
+	 gr.Data = bufferDef;
+	 gr.Type = GraphicResourceDesc::ResourceType::InstanceBuffer;
+	 sceneRes_.Graphics.push_back(gr);
+
+	 return bufferDef;
  }
  
  Camera* Scene::GetMainCamera() {

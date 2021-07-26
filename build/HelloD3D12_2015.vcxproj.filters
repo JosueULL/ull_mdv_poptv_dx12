@@ -29,6 +29,19 @@
     <ClCompile Include="..\src\DX12InstanceBuffer.h">
       <Filter>Backends\DX12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\DX12RenderState.cpp">
+      <Filter>Backends\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\InstancedMeshRendererComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\DX12RootSignature.cpp">
+      <Filter>Backends\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\InstanceBufferDef.h" />
+    <ClCompile Include="..\src\DX12Buffer.cpp">
+      <Filter>Backends\DX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ImageIO.h" />
@@ -44,7 +57,7 @@
     <ClInclude Include="..\src\DX12MeshBuffer.h">
       <Filter>Backends\DX12</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\DX12ConstantBuffer.h">
+    <ClInclude Include="..\src\DX12Buffer.h">
       <Filter>Backends\DX12</Filter>
     </ClInclude>
     <ClInclude Include="..\src\d3dx12.h">
@@ -77,6 +90,15 @@
     </ClInclude>
     <ClInclude Include="..\src\FPCameraCtrlComponent.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DX12RenderState.h">
+      <Filter>Backends\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\InstancedMeshRendererComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DX12RootSignature.h">
+      <Filter>Backends\DX12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

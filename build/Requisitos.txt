@@ -1,10 +1,14 @@
-1- Añadir camara con controller
+Root Signature & Descriptor tables
+	- https://logins.github.io/graphics/2020/06/26/DX12RootSignatureObject.html
+	- https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables
 
-2- Añadir instancing rendering
 3- Move instances
 4- Pickup objects
 5- Añadir UI y Timer (https://www.braynzarsoft.net/viewtutorial/q16390-11-drawing-text-in-directx-12)
 6- Write docs
+
+
+Cambiar los recursos de escena para que se generen al cargar la escena. No on the fly.
 
 NICE TO HAVE
 - Improve memory layout

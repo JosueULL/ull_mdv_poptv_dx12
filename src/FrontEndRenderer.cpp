@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "MeshRendererComponent.h"
+#include "InstancedMeshRendererComponent.h"
 #include "SceneObject.h"
 
 FrontEndRenderer::FrontEndRenderer() :
@@ -22,20 +23,30 @@ const FrameGraph* FrontEndRenderer::GetSceneFrameGraph(Scene* scene) {
     fgCam.CBuffer.Data = static_cast<Camera::ConstantBuffer*>(cam->GetCBuffer());
     fg->RenderCam = fgCam;
 
-    std::vector<MeshRendererComponent*> renderers = scene->GetAllComponents<MeshRendererComponent>();
     
+    // Gather all mesh renderers
+    std::vector<MeshRendererComponent*> renderers = scene->GetAllComponents<MeshRendererComponent>();
     for (MeshRendererComponent* renderer : renderers) {
         SceneObject* sceneObj = renderer->GetSceneObject();
         FrameGraphMesh fGraphMesh;
         fGraphMesh.Id = renderer->GetMesh();
-        fGraphMesh.CBuffer.RootIndex = 2;
-        fGraphMesh.CBuffer.Data = sceneObj->GetCBuffer();
-        fGraphMesh.CBuffer.Id = sceneObj->GetId();
-
         fGraphMesh.TextureBinds = renderer->GetMaterial()->TextureBinds;
 
-        fg->Meshes.push_back(fGraphMesh);
+        InstanceBufferDef* instanceBufferDef = renderer->GetInstanceBuffer();
+        if (instanceBufferDef != nullptr) {
+            fGraphMesh.CBuffer.RootIndex = 3;
+            fGraphMesh.CBuffer.Data = instanceBufferDef->ptr;
+            fGraphMesh.CBuffer.Id = instanceBufferDef->id;
+            fg->InstancedMeshes.push_back(fGraphMesh);
+        }
+        else 
+        {
+            fGraphMesh.CBuffer.RootIndex = 2;
+            fGraphMesh.CBuffer.Data = sceneObj->GetCBuffer();
+            fGraphMesh.CBuffer.Id = sceneObj->GetId();
+            fg->Meshes.push_back(fGraphMesh);
+        }
     }
 
-    return fg;
+     return fg;
 }

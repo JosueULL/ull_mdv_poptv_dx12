@@ -14,6 +14,12 @@ public:
 	struct TextureBind {
 		std::string Id;
 		uint32_t RootIndex;
+
+		TextureBind() :
+			Id(),
+			RootIndex(9)
+		{
+		}
 	};
 	
 	void SetTexture(uint32_t rootIndex, std::string resourceId) {
