@@ -42,6 +42,7 @@
     <ClCompile Include="..\src\DX12Buffer.cpp">
       <Filter>Backends\DX12</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\MeshIO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ImageIO.h" />
@@ -100,6 +101,8 @@
     <ClInclude Include="..\src\DX12RootSignature.h">
       <Filter>Backends\DX12</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\MeshIO.h" />
+    <ClInclude Include="..\src\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Requisitos.txt" />

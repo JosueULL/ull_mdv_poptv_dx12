@@ -29,6 +29,7 @@ protected:
 	SceneObject* AddObject(std::string id);
 	Camera* AddCamera(std::string id);
 	void AddTexture(std::string id, std::string path);
+	void AddMesh(std::string id, std::string path);
 	InstanceBufferDef* AddInstanceBuffer(std::string id, void* data, int count, int size);
 
 public:

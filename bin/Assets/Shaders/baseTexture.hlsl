@@ -11,17 +11,20 @@ cbuffer ObjectConstants : register (b1)
 struct VertexShaderOutput
 {
 	float4 position : SV_POSITION;
+	float3 wNormal : NORMAL;
 	float2 uv : TEXCOORD;
 };
 
 VertexShaderOutput VS_main(
 	float4 position : POSITION,
+	float3 normal : NORMAL,
 	float2 uv : TEXCOORD)
 {
 	VertexShaderOutput output;
 
 	float4x4 mvp = mul(mProj, mul(mView, mWorld));	
 	output.position = mul(mvp, float4(position.xyz, 1));
+	output.wNormal = mul(mWorld, normal);
 	output.uv = uv;
 
 	return output;
@@ -30,8 +33,9 @@ VertexShaderOutput VS_main(
 Texture2D<float4> anteruTexture : register(t0);
 SamplerState texureSampler      : register(s0);
 
-float4 PS_main(float4 position : SV_POSITION,
-	float2 uv : TEXCOORD) : SV_TARGET
+float4 PS_main(VertexShaderOutput IN) : SV_TARGET
 {
-	return anteruTexture.Sample(texureSampler, uv);
+	float nDotL = clamp(dot(normalize(IN.wNormal), normalize(float3(0.25,1,0))), 0.25, 1);
+	float3 col = anteruTexture.Sample(texureSampler, IN.uv) * nDotL;
+	return float4(col,1);
 }

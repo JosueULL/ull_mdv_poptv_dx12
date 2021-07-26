@@ -117,6 +117,7 @@
     <ClInclude Include="..\src\ImageIO.h" />
     <ClInclude Include="..\src\Mesh.h" />
     <ClInclude Include="..\src\DX12MeshBuffer.h" />
+    <ClInclude Include="..\src\MeshIO.h" />
     <ClInclude Include="..\src\MeshRendererComponent.h" />
     <ClInclude Include="..\src\MeshQuad.h" />
     <ClInclude Include="..\src\RubyTexture.h" />
@@ -127,6 +128,7 @@
     <ClInclude Include="..\src\System.h" />
     <ClInclude Include="..\src\TestScene.h" />
     <ClInclude Include="..\src\Texture.h" />
+    <ClInclude Include="..\src\tiny_obj_loader.h" />
     <ClInclude Include="..\src\Transform.h" />
     <ClInclude Include="..\src\Utility.h" />
     <ClInclude Include="..\src\Window.h" />
@@ -149,6 +151,7 @@
     <ClCompile Include="..\src\Keyboard.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\MeshCube.h" />
+    <ClCompile Include="..\src\MeshIO.cpp" />
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\SceneObject.cpp" />
     <ClCompile Include="..\src\System.cpp" />

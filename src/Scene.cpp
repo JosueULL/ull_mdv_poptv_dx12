@@ -9,6 +9,7 @@
 #include "Texture.h"
 #include "ConstantBufferDef.h"
 #include "ImageIO.h"
+#include "MeshIO.h"
 
 const std::string BuiltInRes::Mesh::Quad = "BuiltIn/Mesh/Quad";
 const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
@@ -78,6 +79,15 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 d2.Id = id;
 	 d2.Data = texture;
 	 d2.Type = GraphicResourceDesc::ResourceType::Texture;
+	 sceneRes_.Graphics.push_back(d2);
+ }
+
+ void Scene::AddMesh(std::string id, std::string path) {
+	 GraphicResourceDesc d2 = GraphicResourceDesc();
+	 Mesh* mesh = LoadObjMeshFromFile(path.c_str());
+	 d2.Id = id;
+	 d2.Data = mesh;
+	 d2.Type = GraphicResourceDesc::ResourceType::Mesh;
 	 sceneRes_.Graphics.push_back(d2);
  }
 
