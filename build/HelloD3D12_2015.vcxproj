@@ -105,11 +105,12 @@
     <ClInclude Include="..\src\DX12Renderer.h" />
     <ClInclude Include="..\src\DX12Buffer.h" />
     <ClInclude Include="..\src\DX12RenderState.h" />
-    <ClInclude Include="..\src\DX12RootSignature.h" />
     <ClInclude Include="..\src\FPCameraCtrlComponent.h" />
     <ClInclude Include="..\src\FrontEndRenderer.h" />
+    <ClInclude Include="..\src\happly.h" />
     <ClInclude Include="..\src\InstancedMeshRendererComponent.h" />
     <ClInclude Include="..\src\Keyboard.h" />
+    <ClInclude Include="..\src\LevelMap.h" />
     <ClInclude Include="..\src\Material.h" />
     <ClInclude Include="..\src\MemoryLeakDetector.h" />
     <ClInclude Include="..\src\DX12Texture.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\SceneObject.h" />
     <ClInclude Include="..\src\SceneResourcesDesc.h" />
+    <ClInclude Include="..\src\RenderStateDef.h" />
     <ClInclude Include="..\src\Singleton.h" />
     <ClInclude Include="..\src\System.h" />
     <ClInclude Include="..\src\TestScene.h" />
@@ -141,7 +143,6 @@
     <ClCompile Include="..\src\DX12InstanceBuffer.h" />
     <ClCompile Include="..\src\DX12Renderer.cpp" />
     <ClCompile Include="..\src\DX12RenderState.cpp" />
-    <ClCompile Include="..\src\DX12RootSignature.cpp" />
     <ClCompile Include="..\src\FPCameraCtrlComponent.cpp" />
     <ClCompile Include="..\src\FrameGraph.h" />
     <ClCompile Include="..\src\FrontEndRenderer.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="..\src\InstanceBufferDef.h" />
     <ClCompile Include="..\src\InstancedMeshRendererComponent.cpp" />
     <ClCompile Include="..\src\Keyboard.cpp" />
+    <ClCompile Include="..\src\LevelMap.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\MeshCube.h" />
     <ClCompile Include="..\src\MeshIO.cpp" />

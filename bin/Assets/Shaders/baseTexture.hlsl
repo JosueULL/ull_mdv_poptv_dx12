@@ -30,12 +30,10 @@ VertexShaderOutput VS_main(
 	return output;
 }
 
-Texture2D<float4> anteruTexture : register(t0);
+Texture2D<float4> mainTex : register(t0);
 SamplerState texureSampler      : register(s0);
 
 float4 PS_main(VertexShaderOutput IN) : SV_TARGET
 {
-	float nDotL = clamp(dot(normalize(IN.wNormal), normalize(float3(0.25,1,0))), 0.25, 1);
-	float3 col = anteruTexture.Sample(texureSampler, IN.uv) * nDotL;
-	return float4(col,1);
+	return mainTex.Sample(texureSampler, IN.uv);
 }

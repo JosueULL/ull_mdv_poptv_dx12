@@ -29,20 +29,22 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include "DX12RenderState.h"
 
 class Mesh;
 class Texture;
 class GraphicResourceDesc;
 class FrameGraph;
 
-struct RendererCommand;
+struct FrameGraphCamera;
+struct FrameGraphMesh;
 struct FrameGraphCBuffer;
 
 struct DX12MeshBuffer;
 struct DX12Texture;
 struct DX12Buffer;
 struct DX12InstanceBuffer;
-struct DX12RenderState;
+
 
 class Window;
 
@@ -56,7 +58,6 @@ public:
 	DX12Renderer ();
 	virtual ~DX12Renderer ();
 
-	void Render(std::vector<RendererCommand> commands);
 	void Render(const FrameGraph* frameGraph);
 	void Initialize(const Window& window);
 	void Shutdown();
@@ -104,14 +105,17 @@ private:
 	void CreateDeviceAndSwapChain (const Window& window);
 	void CreateAllocatorsAndCommandLists ();
 	void CreateViewportScissor (const Window& window);
-	void CreateRootSignature();
-	void CreateRootSignature2();
-
+	void CreateDefaultRenderStates();
+	
 	void SetupSwapChain ();
 	void SetupRenderTargets ();
 
-	void ProcessRenderCommand(const RendererCommand& cmd, ID3D12GraphicsCommandList* commandList);
 	void UpdateCBuffer(const FrameGraphCBuffer& cbuffer, ID3D12GraphicsCommandList* commandList);
+	void SetRenderState(std::string renderStateId, ID3D12GraphicsCommandList* commandList);
+
+	void DrawMesh(std::string id, ID3D12GraphicsCommandList* commandList, int instanceCount);
+	void DrawMeshes(const FrameGraphCamera& cam, const std::vector<FrameGraphMesh>& meshes, ID3D12GraphicsCommandList* commandList);
+	void DrawInstancedMeshes(const FrameGraph* frameGraph, ID3D12GraphicsCommandList* commandList);
 
 	const Window* window_;
 
@@ -129,7 +133,10 @@ private:
 	std::unordered_map<std::string, DX12Texture> resTextures_;
 	std::unordered_map<std::string, DX12Buffer> resConstantBuffers_;
 	std::unordered_map<std::string, DX12InstanceBuffer> resInstanceBuffers_;
-	std::unordered_map<std::string, DX12RenderState> resRenderStates_;
+	std::unordered_map<std::string, DX12RenderState*> resRenderStates_;
+	DX12RenderState* currentRenderState_;
+	DX12RenderState* renderStateDefaultSimple;
+	DX12RenderState* renderStateDefaultInstanced;
 };
 
 #endif

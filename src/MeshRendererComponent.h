@@ -37,11 +37,11 @@ public:
     }
 
     void SetMaterial(Material* material) {
-        material_.reset(material);
+        material_ = material;
     }
 
     Material* GetMaterial() {
-        return material_.get();
+        return material_;
     }
 
     void SetInstanceBuffer(InstanceBufferDef* buffer) {
@@ -54,6 +54,6 @@ public:
 
 private:
     std::string meshId_;
-    std::shared_ptr<Material> material_;
+    Material* material_;
     InstanceBufferDef* instanceBufferDef_;
 };

@@ -7,9 +7,11 @@
 
 struct DX12RenderState {
 public:
-	
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState;
 	
-	static DX12RenderState Create(ID3D12Device* device, ID3D12RootSignature* rootSign, std::string shaderPath);
+	static DX12RenderState* Create(ID3D12Device* device, std::string shaderPath, bool instancing);
 
+	void CreateRootSignature(ID3D12Device* device, bool instancing);
+	void CreatePipelineState(ID3D12Device* device, std::string shaderPath);
 };

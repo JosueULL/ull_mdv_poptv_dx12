@@ -10,7 +10,8 @@ public:
 	void ReleaseAll() {
 		for (GraphicResourceDesc gd : Graphics) {
 			if (gd.Type == GraphicResourceDesc::ResourceType::Mesh ||
-				gd.Type == GraphicResourceDesc::ResourceType::Texture) {
+				gd.Type == GraphicResourceDesc::ResourceType::Texture ||
+				gd.Type == GraphicResourceDesc::ResourceType::Material) {
 				delete gd.Data;
 				gd.Data = nullptr;
 			}

@@ -19,18 +19,25 @@ const FrameGraph* FrontEndRenderer::GetSceneFrameGraph(Scene* scene) {
     Camera* cam = scene->GetMainCamera();
     FrameGraphCamera fgCam;
     fgCam.CBuffer.RootIndex = 1;
-    fgCam.CBuffer.Id = "mainCam";
+    fgCam.CBuffer.Id = "mainCamera";
     fgCam.CBuffer.Data = static_cast<Camera::ConstantBuffer*>(cam->GetCBuffer());
     fg->RenderCam = fgCam;
 
-    
-    // Gather all mesh renderers
+    Camera* uicam = scene->GetUICamera();
+    FrameGraphCamera fgCamUI;
+    fgCamUI.CBuffer.RootIndex = 1;
+    fgCamUI.CBuffer.Id = "uiCamera";
+    fgCamUI.CBuffer.Data = static_cast<Camera::ConstantBuffer*>(uicam->GetCBuffer());
+    fg->UICam = fgCamUI;
+
+    // Gather all mesh renderers from Objects
     std::vector<MeshRendererComponent*> renderers = scene->GetAllComponents<MeshRendererComponent>();
     for (MeshRendererComponent* renderer : renderers) {
         SceneObject* sceneObj = renderer->GetSceneObject();
         FrameGraphMesh fGraphMesh;
         fGraphMesh.Id = renderer->GetMesh();
         fGraphMesh.TextureBinds = renderer->GetMaterial()->TextureBinds;
+        fGraphMesh.RenderState = renderer->GetMaterial()->GetShader();
 
         InstanceBufferDef* instanceBufferDef = renderer->GetInstanceBuffer();
         if (instanceBufferDef != nullptr) {
@@ -47,6 +54,21 @@ const FrameGraph* FrontEndRenderer::GetSceneFrameGraph(Scene* scene) {
             fg->Meshes.push_back(fGraphMesh);
         }
     }
+
+    // Gather all mesh renderers from UI
+    std::vector<MeshRendererComponent*> uirenderers = scene->GetAllUIComponents<MeshRendererComponent>();
+    for (MeshRendererComponent* renderer : uirenderers) {
+        SceneObject* sceneObj = renderer->GetSceneObject();
+        FrameGraphMesh fGraphMesh;
+        fGraphMesh.Id = renderer->GetMesh();
+        fGraphMesh.TextureBinds = renderer->GetMaterial()->TextureBinds;
+        fGraphMesh.RenderState = renderer->GetMaterial()->GetShader();
+        fGraphMesh.CBuffer.RootIndex = 2;
+        fGraphMesh.CBuffer.Data = sceneObj->GetCBuffer();
+        fGraphMesh.CBuffer.Id = sceneObj->GetId();
+        fg->UI.push_back(fGraphMesh);
+    }
+
 
      return fg;
 }

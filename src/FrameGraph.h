@@ -18,6 +18,7 @@ struct FrameGraphMesh {
 	std::string Id;
 	FrameGraphCBuffer CBuffer;
 	std::vector<Material::TextureBind> TextureBinds;
+	std::string RenderState;
 };
 
 struct FrameGraphCamera {
@@ -27,11 +28,14 @@ struct FrameGraphCamera {
 class FrameGraph {
 public:
 	FrameGraphCamera RenderCam;
+	FrameGraphCamera UICam;
 	std::vector<FrameGraphMesh> Meshes;
 	std::vector<FrameGraphMesh> InstancedMeshes;
+	std::vector<FrameGraphMesh> UI;
 
 	void Clear() {
 		Meshes.clear();
 		InstancedMeshes.clear();
+		UI.clear();
 	}
 };

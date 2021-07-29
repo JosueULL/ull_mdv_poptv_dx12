@@ -13,7 +13,6 @@
     <ClCompile Include="..\src\FrameGraph.h" />
     <ClCompile Include="..\src\FrontEndRenderer.cpp" />
     <ClCompile Include="..\src\SceneObject.cpp" />
-    <ClCompile Include="..\src\TestScene.cpp" />
     <ClCompile Include="..\src\Transform.cpp" />
     <ClCompile Include="..\src\MeshCube.h" />
     <ClCompile Include="..\src\Keyboard.cpp" />
@@ -35,14 +34,17 @@
     <ClCompile Include="..\src\InstancedMeshRendererComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\DX12RootSignature.cpp">
-      <Filter>Backends\DX12</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\InstanceBufferDef.h" />
     <ClCompile Include="..\src\DX12Buffer.cpp">
       <Filter>Backends\DX12</Filter>
     </ClCompile>
     <ClCompile Include="..\src\MeshIO.cpp" />
+    <ClCompile Include="..\src\TestScene.cpp">
+      <Filter>DemoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LevelMap.cpp">
+      <Filter>DemoGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ImageIO.h" />
@@ -74,7 +76,6 @@
     <ClInclude Include="..\src\Texture.h" />
     <ClInclude Include="..\src\MemoryLeakDetector.h" />
     <ClInclude Include="..\src\SceneObject.h" />
-    <ClInclude Include="..\src\TestScene.h" />
     <ClInclude Include="..\src\Material.h" />
     <ClInclude Include="..\src\FrontEndRenderer.h" />
     <ClInclude Include="..\src\Transform.h" />
@@ -98,11 +99,16 @@
     <ClInclude Include="..\src\InstancedMeshRendererComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\DX12RootSignature.h">
-      <Filter>Backends\DX12</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\MeshIO.h" />
     <ClInclude Include="..\src\tiny_obj_loader.h" />
+    <ClInclude Include="..\src\TestScene.h">
+      <Filter>DemoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LevelMap.h">
+      <Filter>DemoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RenderStateDef.h" />
+    <ClInclude Include="..\src\happly.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Requisitos.txt" />
@@ -116,6 +122,9 @@
     </Filter>
     <Filter Include="Backends\DX12">
       <UniqueIdentifier>{904ff9f1-fe71-447e-9fad-7f16a510ca4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DemoGame">
+      <UniqueIdentifier>{2c9ebc80-bdf3-4ade-ae64-2501d8f8edc4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

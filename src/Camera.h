@@ -26,6 +26,7 @@ public:
 	}
 
 	void Update() override;
+	void SetOrthographic();
 
 private:
 	std::unique_ptr<ConstantBuffer> cBuffer_;

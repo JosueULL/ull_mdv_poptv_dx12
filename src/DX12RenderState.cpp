@@ -8,18 +8,51 @@
 using namespace Microsoft::WRL;
 
 ///////////////////////////////////////////////////////////////////////////////
-DX12RenderState DX12RenderState::Create(ID3D12Device* device, ID3D12RootSignature* rootSign, std::string shaderPath)
+DX12RenderState* DX12RenderState::Create(ID3D12Device* device, std::string shaderPath, bool instancing)
 {
-	DX12RenderState renderState;
+	DX12RenderState* renderState = new DX12RenderState();
+	renderState->CreateRootSignature(device, instancing);
+	renderState->CreatePipelineState(device, shaderPath);
+	return renderState;
+}
 
+
+void DX12RenderState::CreateRootSignature(ID3D12Device* device, bool instancing) {
+	CD3DX12_ROOT_PARAMETER parameters[3];
+
+	// Create a descriptor table with one entry in our descriptor heap
+	CD3DX12_DESCRIPTOR_RANGE range{ D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0 };
+	parameters[0].InitAsDescriptorTable(1, &range);										// Add srv descriptor table (for textures)
+	parameters[1].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (camera data) as a descriptor
+	if (instancing)
+		parameters[2].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add SRV for StructuredBuffer
+	else
+		parameters[2].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (object data) as a descriptor 
+
+	// We don't use another descriptor heap for the sampler, instead we use a static sampler
+	CD3DX12_STATIC_SAMPLER_DESC samplers[1];
+	samplers[0].Init(0, D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT);
+
+	CD3DX12_ROOT_SIGNATURE_DESC descRootSignature(3, parameters, 1, samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	ComPtr<ID3DBlob> rootBlob, errorBlob;
+	D3D12SerializeRootSignature(&descRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &rootBlob, &errorBlob);
+
+	device->CreateRootSignature(0, rootBlob->GetBufferPointer(), rootBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+}
+
+void DX12RenderState::CreatePipelineState(ID3D12Device* device, std::string shaderPath)
+{
 	static const D3D12_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 
 	std::ifstream ifs(shaderPath);
+	_STL_ASSERT(ifs.good(), "Shader file doesn't exist");
 	std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	const char* sc = content.c_str();
 
@@ -40,7 +73,7 @@ DX12RenderState DX12RenderState::Create(ID3D12Device* device, ID3D12RootSignatur
 	psoDesc.VS.pShaderBytecode = vertexShader->GetBufferPointer();
 	psoDesc.PS.BytecodeLength = pixelShader->GetBufferSize();
 	psoDesc.PS.pShaderBytecode = pixelShader->GetBufferPointer();
-	psoDesc.pRootSignature = rootSign;
+	psoDesc.pRootSignature = rootSignature.Get();
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
@@ -64,7 +97,5 @@ DX12RenderState DX12RenderState::Create(ID3D12Device* device, ID3D12RootSignatur
 	psoDesc.SampleMask = 0xFFFFFFFF;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-	device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&renderState.pipelineState));
-
-	return renderState;
+	device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState));
 }

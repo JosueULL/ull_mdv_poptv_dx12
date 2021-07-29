@@ -2,6 +2,7 @@
 #include "MeshIO.h"
 #define TINYOBJLOADER_IMPLEMENTATION 
 #include "tiny_obj_loader.h"
+#include "happly.h"
 #include <iostream>
 
 
@@ -72,20 +73,22 @@ Mesh* LoadObjMeshFromFile(std::string inputfile)
 		// With this general index we can compose the vertex structure
 		Vertex vertex;
 
-		vertex.position.x = attrib.vertices[3 * idx.vertex_index + 0];
-		vertex.position.y = attrib.vertices[3 * idx.vertex_index + 1];
-		vertex.position.z = attrib.vertices[3 * idx.vertex_index + 2];
-		vertex.normal.x = attrib.normals[3 * idx.normal_index + 0];
-		vertex.normal.y = attrib.normals[3 * idx.normal_index + 1];
-		vertex.normal.z = attrib.normals[3 * idx.normal_index + 2];
-		vertex.uv.x = attrib.texcoords[2 * idx.texcoord_index + 0];
-		vertex.uv.y = attrib.texcoords[2 * idx.texcoord_index + 1];
-		//vertex.col = defaultColor;
-		//vertex.material = XMUINT3(0, 0, 0);
-
+		vertex.position.x = attrib.vertices[3 * size_t(idx.vertex_index) + 0];
+		vertex.position.y = attrib.vertices[3 * size_t(idx.vertex_index) + 1];
+		vertex.position.z = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
+		vertex.normal.x = attrib.normals[3 * size_t(idx.normal_index) + 0];
+		vertex.normal.y = attrib.normals[3 * size_t(idx.normal_index) + 1];
+		vertex.normal.z = attrib.normals[3 * size_t(idx.normal_index) + 2];
+		vertex.uv.x = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
+		vertex.uv.y = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
+		vertex.color.r = attrib.colors[3 * size_t(idx.vertex_index) + 0];
+		vertex.color.g = attrib.colors[3 * size_t(idx.vertex_index) + 1];
+		vertex.color.b = attrib.colors[3 * size_t(idx.vertex_index) + 2];
+		
 		mesh->vertices[index] = vertex; //Copy vertex
 
 	}
 
 	return mesh;
 }
+

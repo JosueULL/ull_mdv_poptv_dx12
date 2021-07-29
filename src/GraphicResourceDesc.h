@@ -8,6 +8,8 @@ public:
 	enum class ResourceType {
 		Mesh,
 		Texture,
+		RenderState,
+		Material,
 		ConstantBuffer,
 		InstanceBuffer,
 	};

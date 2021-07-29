@@ -40,6 +40,7 @@
 #include "Texture.h"
 #include "ConstantBufferDef.h"
 #include "InstanceBufferDef.h"
+#include "RenderStateDef.h"
 #include "FrameGraph.h"
 #include "GraphicResourceDesc.h"
 
@@ -47,8 +48,10 @@
 #undef max
 #endif
 
-using namespace Microsoft::WRL;
+#define RENDERSTATE_DEFAULT "Assets/Shaders/baseTexture.hlsl"
+#define RENDERSTATE_DEFAULT_INSTANCED "Assets/Shaders/instancedTexture.hlsl"
 
+using namespace Microsoft::WRL;
 
 namespace {
 struct RenderEnvironment
@@ -115,7 +118,8 @@ DX12Renderer::DX12Renderer() :
 	frameFenceEvents_{ 0,0,0 },
 	currentFenceValue_(0),
 	fenceValues_{0,0,0},
-	renderTargetViewDescriptorSize_(0)
+	renderTargetViewDescriptorSize_(0),
+	currentRenderState_(nullptr)
 {
 	ComPtr<ID3D12Debug> debugController;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
@@ -189,20 +193,77 @@ void DX12Renderer::Render(const FrameGraph* frameGraph)
 	PrepareRender();
 
 	auto commandList = commandLists_[currentBackBuffer_].Get();
-	
-	// Set the render state, rootS and pipeline state for simple mesh rendering
-	DX12RenderState regularRS = resRenderStates_["default"];
-	commandList->SetGraphicsRootSignature(rootSignature_.Get());
-	commandList->SetPipelineState(regularRS.pipelineState.Get());
 
-	// ------------------------------------------------------------- UPDATE CAMERA BUFFER
-	const FrameGraphCamera fgCam = frameGraph->RenderCam;
-	UpdateCBuffer(fgCam.CBuffer, commandList);
+	if (frameGraph->Meshes.size() > 0)
+		DrawMeshes(frameGraph->RenderCam, frameGraph->Meshes, commandList);
+	if (frameGraph->InstancedMeshes.size() > 0)
+		DrawInstancedMeshes(frameGraph, commandList);
+	if (frameGraph->UI.size() > 0)
+		DrawMeshes(frameGraph->UICam, frameGraph->UI, commandList);
 	
-	for (const FrameGraphMesh& fgMesh : frameGraph->Meshes)
+	FinalizeRender();
+
+	Present();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void DX12Renderer::DrawMesh(std::string id, ID3D12GraphicsCommandList* commandList, int instanceCount) 
+{
+	_STL_ASSERT((resMeshBuffers_.find(id) != resMeshBuffers_.end()), "Mesh with given Id couldn't be found");
+	DX12MeshBuffer meshBuffer = resMeshBuffers_[id];
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList->IASetVertexBuffers(0, 1, &meshBuffer.vertexBufferView);
+	commandList->IASetIndexBuffer(&meshBuffer.indexBufferView);
+	commandList->DrawIndexedInstanced(meshBuffer.indexCount, instanceCount, 0, 0, 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void DX12Renderer::DrawMeshes(const FrameGraphCamera& cam, const std::vector<FrameGraphMesh>& meshes, ID3D12GraphicsCommandList* commandList)
+{
+	SetRenderState(RENDERSTATE_DEFAULT, commandList);
+	UpdateCBuffer(cam.CBuffer, commandList);
+
+	for (const FrameGraphMesh& fgMesh : meshes)
 	{
 		// ------------------------------------------------------------- BIND TEXTURES
-		for (const auto& fgTextureBind: fgMesh.TextureBinds) 
+		for (const auto& fgTextureBind : fgMesh.TextureBinds)
+		{
+			SetRenderState(fgMesh.RenderState, commandList);
+
+			_STL_ASSERT(resTextures_.find(fgTextureBind.Id) != resTextures_.end(), "Texture with given Id couldn't be found");
+			DX12Texture texture = resTextures_[fgTextureBind.Id];
+			UINT rootIndex = fgTextureBind.RootIndex;
+
+			// Set the descriptor heap containing the texture srv
+			ID3D12DescriptorHeap* heaps[] = { texture.srvDescriptorHeap.Get() };
+			commandList->SetDescriptorHeaps(1, heaps);
+
+			// Set slot 0 of our root signature to point to our descriptor heap with
+			// the texture SRV
+			commandList->SetGraphicsRootDescriptorTable(rootIndex,
+				texture.srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+		}
+
+		UpdateCBuffer(fgMesh.CBuffer, commandList);
+
+		DrawMesh(fgMesh.Id, commandList, 1);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void DX12Renderer::DrawInstancedMeshes(const FrameGraph* frameGraph, ID3D12GraphicsCommandList* commandList) {
+
+	SetRenderState(RENDERSTATE_DEFAULT_INSTANCED, commandList);
+
+	const FrameGraphCamera fgCam = frameGraph->RenderCam;
+	UpdateCBuffer(fgCam.CBuffer, commandList);
+
+	for (const FrameGraphMesh& fgMesh : frameGraph->InstancedMeshes)
+	{
+		SetRenderState(fgMesh.RenderState, commandList);
+
+		// ------------------------------------------------------------ - BIND TEXTURES
+		for (const auto& fgTextureBind : fgMesh.TextureBinds)
 		{
 			_STL_ASSERT(resTextures_.find(fgTextureBind.Id) != resTextures_.end(), "Texture with given Id couldn't be found");
 			DX12Texture texture = resTextures_[fgTextureBind.Id];
@@ -218,45 +279,26 @@ void DX12Renderer::Render(const FrameGraph* frameGraph)
 				texture.srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 		}
 
-		// ------------------------------------------------------------- UPDATE BUFFER
-		UpdateCBuffer(fgMesh.CBuffer, commandList);
-
-		// ------------------------------------------------------------- DRAW MESH!
-		_STL_ASSERT((resMeshBuffers_.find(fgMesh.Id) != resMeshBuffers_.end()), "Mesh with given Id couldn't be found");
-		DX12MeshBuffer meshBuffer = resMeshBuffers_[fgMesh.Id];
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->IASetVertexBuffers(0, 1, &meshBuffer.vertexBufferView);
-		commandList->IASetIndexBuffer(&meshBuffer.indexBufferView);
-		commandList->DrawIndexedInstanced(meshBuffer.indexCount, 1, 0, 0, 0);
-	}
-
-	
-	// Set the render state, rootS and pipeline state for instanced mesh rendering
-	DX12RenderState instancedRS = resRenderStates_["instanced"];
-	commandList->SetGraphicsRootSignature(rootSignatureInstancing_.Get());
-	commandList->SetPipelineState(instancedRS.pipelineState.Get());
-
-	UpdateCBuffer(fgCam.CBuffer, commandList);
-
-	for (const FrameGraphMesh& fgMesh : frameGraph->InstancedMeshes)
-	{
+		// Update Instance buffer
 		_STL_ASSERT(resInstanceBuffers_.find(fgMesh.CBuffer.Id) != resInstanceBuffers_.end(), "Instance Buffer with given Id couldn't be found");
 		DX12InstanceBuffer iBuffer = resInstanceBuffers_[fgMesh.CBuffer.Id];
 		iBuffer.buffer.Update(GetQueueSlot(), fgMesh.CBuffer.Data);
 		commandList->SetGraphicsRootShaderResourceView(2, iBuffer.buffer.slotData[GetQueueSlot()]->GetGPUVirtualAddress());
 
-		_STL_ASSERT((resMeshBuffers_.find(fgMesh.Id) != resMeshBuffers_.end()), "Mesh with given Id couldn't be found");
-		DX12MeshBuffer meshBuffer = resMeshBuffers_[fgMesh.Id];
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->IASetVertexBuffers(0, 1, &meshBuffer.vertexBufferView);
-		commandList->IASetIndexBuffer(&meshBuffer.indexBufferView);
-		commandList->DrawIndexedInstanced(meshBuffer.indexCount, iBuffer.instanceCount, 0, 0, 0);
+		DrawMesh(fgMesh.Id, commandList, iBuffer.instanceCount);
 	}
-
-	FinalizeRender();
-
-	Present();
 }
+
+void DX12Renderer::SetRenderState(std::string renderStateId, ID3D12GraphicsCommandList* commandList) {
+	_STL_ASSERT(resRenderStates_.find(renderStateId) != resRenderStates_.end(), "RenderState couldn't be found. Make sure the material as a valid shader set");
+	DX12RenderState* renderState = resRenderStates_[renderStateId];
+	if (currentRenderState_ != renderState) {
+		currentRenderState_ = renderState;
+		commandList->SetGraphicsRootSignature(currentRenderState_->rootSignature.Get());
+		commandList->SetPipelineState(currentRenderState_->pipelineState.Get());
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 void DX12Renderer::UpdateCBuffer(const FrameGraphCBuffer& cbuffer, ID3D12GraphicsCommandList* commandList)
@@ -288,6 +330,8 @@ void DX12Renderer::FinalizeRender ()
 	// Execute our commands
 	ID3D12CommandList* commandLists [] = { commandList };
 	commandQueue_->ExecuteCommandLists (std::extent<decltype(commandLists)>::value, commandLists);
+
+	currentRenderState_ = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -427,17 +471,7 @@ void DX12Renderer::Initialize (const Window &window)
 	CreateDeviceAndSwapChain (window);
 	CreateAllocatorsAndCommandLists ();
 	CreateViewportScissor (window);
-	CreateRootSignature();
-	CreateRootSignature2();
-
-	// TODO - Setup this properly ------
-	DX12RenderState defaultRS = DX12RenderState::Create(device_.Get(), rootSignature_.Get(), "Assets/Shaders/baseTexture.hlsl");
-	resRenderStates_["default"] = defaultRS;
-
-	DX12RenderState instancedRS = DX12RenderState::Create(device_.Get(), rootSignatureInstancing_.Get(), "Assets/Shaders/instancedTexture.hlsl");
-	resRenderStates_["instanced"] = instancedRS;
-	// ------
-
+	CreateDefaultRenderStates();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -526,6 +560,12 @@ void DX12Renderer::CreateViewportScissor (const Window& window)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void DX12Renderer::CreateDefaultRenderStates() {
+	resRenderStates_[RENDERSTATE_DEFAULT] = DX12RenderState::Create(device_.Get(), RENDERSTATE_DEFAULT, false);
+	resRenderStates_[RENDERSTATE_DEFAULT_INSTANCED] = DX12RenderState::Create(device_.Get(), RENDERSTATE_DEFAULT_INSTANCED, true);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void DX12Renderer::LoadResources(std::vector<GraphicResourceDesc> graphRes) {
 	// Create our upload fence, command list and command allocator
 	// This will be only used while creating the mesh buffer and the texture
@@ -574,6 +614,14 @@ void DX12Renderer::LoadResources(std::vector<GraphicResourceDesc> graphRes) {
 			iBuffer.instanceCount = ibDef->instanceCount;
 			resInstanceBuffers_[res.Id] = iBuffer;
 		}
+		else if (res.Type == GraphicResourceDesc::ResourceType::RenderState) {
+			RenderStateDef* sDef = static_cast<RenderStateDef*>(res.Data);
+			_STL_ASSERT(sDef != nullptr, "Error casting the resource to a shader def type");
+			ID3D12RootSignature* pipeline = nullptr;
+			pipeline = sDef->instancing ? rootSignatureInstancing_.Get() : rootSignature_.Get();
+			if (resRenderStates_.find(sDef->shaderPath) == resRenderStates_.end()) // RenderState still doesn't exist
+				resRenderStates_[res.Id] = DX12RenderState::Create(device_.Get(), sDef->shaderPath, sDef->instancing);
+		}
 	}
 
 	uploadCommandList->Close();
@@ -596,55 +644,3 @@ void DX12Renderer::LoadResources(std::vector<GraphicResourceDesc> graphRes) {
 
 	CloseHandle(waitEvent);
 }
-
-///////////////////////////////////////////////////////////////////////////////
-void DX12Renderer::CreateRootSignature()
-{
-	
-	CD3DX12_ROOT_PARAMETER parameters[3];
-
-	// Create a descriptor table with one entry in our descriptor heap
-	CD3DX12_DESCRIPTOR_RANGE range{ D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0 };
-	parameters[0].InitAsDescriptorTable(1, &range);										// Add srv descriptor table (for textures)
-	parameters[1].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (object data) as a descriptor
-	parameters[2].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (camera data) as a descriptor 
-	
-	// We don't use another descriptor heap for the sampler, instead we use a static sampler
-	CD3DX12_STATIC_SAMPLER_DESC samplers[1];
-	samplers[0].Init(0, D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT);
-
-	CD3DX12_ROOT_SIGNATURE_DESC descRootSignature(3, parameters, 1, samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-	ComPtr<ID3DBlob> rootBlob, errorBlob;
-	D3D12SerializeRootSignature(&descRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &rootBlob, &errorBlob);
-
-	device_->CreateRootSignature(0, rootBlob->GetBufferPointer(), rootBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-void DX12Renderer::CreateRootSignature2() {
-
-	// ------------------------------------------ Instanced
-	CD3DX12_ROOT_PARAMETER parameters[3];
-
-	// Create a descriptor table with one entry in our descriptor heap
-	CD3DX12_DESCRIPTOR_RANGE range{ D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0 };
-	parameters[0].InitAsDescriptorTable(1, &range);										// Add srv descriptor table (for textures)
-	parameters[1].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (object data) as a descriptor
-	parameters[2].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add SRV for StructuredBuffer
-
-	//parameters[2].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (camera data) as a descriptor 
-
-	// We don't use another descriptor heap for the sampler, instead we use a static sampler
-	CD3DX12_STATIC_SAMPLER_DESC samplers[1];
-	samplers[0].Init(0, D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT);
-
-	CD3DX12_ROOT_SIGNATURE_DESC descRootSignature(3, parameters, 1, samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-	ComPtr<ID3DBlob> rootBlob, errorBlob;
-	D3D12SerializeRootSignature(&descRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &rootBlob, &errorBlob);
-
-	device_->CreateRootSignature(0, rootBlob->GetBufferPointer(), rootBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignatureInstancing_));
-}
-
