@@ -11,14 +11,10 @@ class Texture;
 class Mesh;
 class Material;
 
-class BuiltInRes {
-public:
-	class Mesh {
-	public:
-		static const std::string Quad;
-		static const std::string Cube;
-	};
-};
+
+#define BUILTIN_MESH_QUAD "BuiltIn/Mesh/Quad"
+#define BUILTIN_MESH_CUBE "BuiltIn/Mesh/Cube"
+
 
 class Scene {
 private:
@@ -28,7 +24,7 @@ private:
 	void AddBuiltInResources();
 
 protected:
-	std::unique_ptr<Camera> mainCam_;
+	Camera* mainCam_;
 	std::unique_ptr<Camera> uiCam_;
 
 	std::vector<std::unique_ptr<SceneObject>> objects_;
@@ -49,7 +45,7 @@ public:
 	Material* AddMaterial(std::string id, std::string shaderpath, bool instancing);
 	InstanceBufferDef* AddInstanceBuffer(std::string id, void* data, int count, int size);
 
-	const SceneResourcesDesc GetResourcesDesc() { return sceneRes_; };
+	const SceneResourcesDesc& GetResourcesDesc() { return sceneRes_; };
 
 	template<class T>
 	std::vector<T*> GetAllComponents() {
@@ -76,6 +72,6 @@ public:
 		return list;
 	}
 
-	Camera* GetMainCamera() { return mainCam_.get(); }
+	Camera* GetMainCamera() { return mainCam_; }
 	Camera* GetUICamera() { return uiCam_.get(); }
 };

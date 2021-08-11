@@ -20,6 +20,7 @@
 // THE SOFTWARE.
 //
 
+
 #include "DX12Renderer.h"
 
 #include <dxgi1_4.h>
@@ -42,7 +43,9 @@
 #include "InstanceBufferDef.h"
 #include "RenderStateDef.h"
 #include "FrameGraph.h"
-#include "GraphicResourceDesc.h"
+#include "SceneResourcesDesc.h"
+#include "System.h"
+#include "SystemTime.h"
 
 #ifdef max 
 #undef max
@@ -119,7 +122,8 @@ DX12Renderer::DX12Renderer() :
 	currentFenceValue_(0),
 	fenceValues_{0,0,0},
 	renderTargetViewDescriptorSize_(0),
-	currentRenderState_(nullptr)
+	currentRenderState_(nullptr),
+	sharedBuffer()
 {
 	ComPtr<ID3D12Debug> debugController;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
@@ -131,6 +135,10 @@ DX12Renderer::DX12Renderer() :
 ///////////////////////////////////////////////////////////////////////////////
 DX12Renderer::~DX12Renderer ()
 {
+	for (auto& rS : resRenderStates_)
+		delete rS.second;
+
+	resRenderStates_.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,6 +178,9 @@ void DX12Renderer::PrepareRender ()
 
 	commandList->ClearRenderTargetView (renderTargetHandle,clearColor, 0, nullptr);
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	sharedBufferData.elapsedTime = (float)System::instance().GetTime()->GetElapsedTime();
+	sharedBufferData.sinTime = std::sin(sharedBufferData.elapsedTime);
 }
 
 namespace {
@@ -222,14 +233,15 @@ void DX12Renderer::DrawMeshes(const FrameGraphCamera& cam, const std::vector<Fra
 {
 	SetRenderState(RENDERSTATE_DEFAULT, commandList);
 	UpdateCBuffer(cam.CBuffer, commandList);
+	UpdateSharedBuffer(commandList);
 
 	for (const FrameGraphMesh& fgMesh : meshes)
 	{
+		SetRenderState(fgMesh.RenderState, commandList);
+
 		// ------------------------------------------------------------- BIND TEXTURES
 		for (const auto& fgTextureBind : fgMesh.TextureBinds)
 		{
-			SetRenderState(fgMesh.RenderState, commandList);
-
 			_STL_ASSERT(resTextures_.find(fgTextureBind.Id) != resTextures_.end(), "Texture with given Id couldn't be found");
 			DX12Texture texture = resTextures_[fgTextureBind.Id];
 			UINT rootIndex = fgTextureBind.RootIndex;
@@ -257,6 +269,7 @@ void DX12Renderer::DrawInstancedMeshes(const FrameGraph* frameGraph, ID3D12Graph
 
 	const FrameGraphCamera fgCam = frameGraph->RenderCam;
 	UpdateCBuffer(fgCam.CBuffer, commandList);
+	UpdateSharedBuffer(commandList);
 
 	for (const FrameGraphMesh& fgMesh : frameGraph->InstancedMeshes)
 	{
@@ -308,6 +321,11 @@ void DX12Renderer::UpdateCBuffer(const FrameGraphCBuffer& cbuffer, ID3D12Graphic
 	cBuffer.Update(GetQueueSlot(), cbuffer.Data);
 	// Set slot "rootIndex" of our root signature to the constant buffer view
 	commandList->SetGraphicsRootConstantBufferView(cbuffer.RootIndex, cBuffer.slotData[GetQueueSlot()]->GetGPUVirtualAddress());
+}
+
+void DX12Renderer::UpdateSharedBuffer(ID3D12GraphicsCommandList* commandList) {
+	sharedBuffer.Update(GetQueueSlot(), &sharedBufferData);
+	commandList->SetGraphicsRootConstantBufferView(3, sharedBuffer.slotData[GetQueueSlot()]->GetGPUVirtualAddress());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -472,6 +490,8 @@ void DX12Renderer::Initialize (const Window &window)
 	CreateAllocatorsAndCommandLists ();
 	CreateViewportScissor (window);
 	CreateDefaultRenderStates();
+
+	sharedBuffer = DX12Buffer::Create(device_.Get(), GetQueueSlotCount(), sizeof(SharedBuffer), &sharedBufferData, "SharedBuffer");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -566,7 +586,7 @@ void DX12Renderer::CreateDefaultRenderStates() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void DX12Renderer::LoadResources(std::vector<GraphicResourceDesc> graphRes) {
+void DX12Renderer::LoadResources(const SceneResourcesDesc& sceneRes) {
 	// Create our upload fence, command list and command allocator
 	// This will be only used while creating the mesh buffer and the texture
 	// to upload data to the GPU.
@@ -582,46 +602,50 @@ void DX12Renderer::LoadResources(std::vector<GraphicResourceDesc> graphRes) {
 		IID_PPV_ARGS(&uploadCommandList));
 
 	
-	for (const GraphicResourceDesc &res : graphRes) 
+	for (const GraphicResourceDesc& res : sceneRes.Meshes)
 	{
-		if (res.Type == GraphicResourceDesc::ResourceType::Mesh) {
-			Mesh* mesh = static_cast<Mesh*>(res.Data);
-			_STL_ASSERT(mesh != nullptr, "Error casting the resource to a mesh type");
-			DX12MeshBuffer meshBuffer = DX12MeshBuffer::Create(device_.Get(), *mesh, uploadCommandList.Get());
-			resMeshBuffers_[res.Id] = meshBuffer;
-		}
-		else if (res.Type == GraphicResourceDesc::ResourceType::Texture) {
-			Texture* texture = static_cast<Texture*>(res.Data);
-			_STL_ASSERT(texture != nullptr, "Error casting the resource to a texture type");
-			DX12Texture dx12texture = DX12Texture::Create(device_.Get(), *texture, uploadCommandList.Get(), res.Id);
-			resTextures_[res.Id] = dx12texture;
-		}
-		else if (res.Type == GraphicResourceDesc::ResourceType::ConstantBuffer) {
-			ConstantBufferDef* cbDef = static_cast<ConstantBufferDef*>(res.Data);
-			_STL_ASSERT(cbDef != nullptr, "Error casting the resource to a constant buffer type");
-			std::string name = "ConstantBuffer ";
-			name.append(res.Id);
-			DX12Buffer cBuffer = DX12Buffer::Create(device_.Get(), GetQueueSlotCount(), cbDef->size, cbDef->ptr, name);
-			resConstantBuffers_[res.Id] = cBuffer;
-		}
-		else if (res.Type == GraphicResourceDesc::ResourceType::InstanceBuffer) {
-			InstanceBufferDef* ibDef = static_cast<InstanceBufferDef*>(res.Data);
-			_STL_ASSERT(ibDef != nullptr, "Error casting the resource to a instance buffer type");
-			DX12InstanceBuffer iBuffer;
-			std::string name = "InstanceBuffer ";
-			name.append(res.Id);
-			iBuffer.buffer = DX12Buffer::Create(device_.Get(), GetQueueSlotCount(), ibDef->size, ibDef->ptr, name);
-			iBuffer.instanceCount = ibDef->instanceCount;
-			resInstanceBuffers_[res.Id] = iBuffer;
-		}
-		else if (res.Type == GraphicResourceDesc::ResourceType::RenderState) {
-			RenderStateDef* sDef = static_cast<RenderStateDef*>(res.Data);
-			_STL_ASSERT(sDef != nullptr, "Error casting the resource to a shader def type");
-			ID3D12RootSignature* pipeline = nullptr;
-			pipeline = sDef->instancing ? rootSignatureInstancing_.Get() : rootSignature_.Get();
-			if (resRenderStates_.find(sDef->shaderPath) == resRenderStates_.end()) // RenderState still doesn't exist
-				resRenderStates_[res.Id] = DX12RenderState::Create(device_.Get(), sDef->shaderPath, sDef->instancing);
-		}
+		Mesh* mesh = static_cast<Mesh*>(res.Data);
+		_STL_ASSERT(mesh != nullptr, "Error casting the resource to a mesh type");
+		DX12MeshBuffer meshBuffer = DX12MeshBuffer::Create(device_.Get(), *mesh, uploadCommandList.Get());
+		resMeshBuffers_[res.Id] = meshBuffer;
+	}
+	
+	for (const GraphicResourceDesc& res : sceneRes.Textures)
+	{
+		Texture* texture = static_cast<Texture*>(res.Data);
+		_STL_ASSERT(texture != nullptr, "Error casting the resource to a texture type");
+		DX12Texture dx12texture = DX12Texture::Create(device_.Get(), *texture, uploadCommandList.Get(), res.Id);
+		resTextures_[res.Id] = dx12texture;
+	}
+
+	for (const GraphicResourceDesc& res : sceneRes.ConstantBuffers)
+	{
+		ConstantBufferDef* cbDef = static_cast<ConstantBufferDef*>(res.Data);
+		_STL_ASSERT(cbDef != nullptr, "Error casting the resource to a constant buffer type");
+		std::string name = "ConstantBuffer ";
+		name.append(res.Id);
+		DX12Buffer cBuffer = DX12Buffer::Create(device_.Get(), GetQueueSlotCount(), cbDef->size, cbDef->ptr, name);
+		resConstantBuffers_[res.Id] = cBuffer;
+	}
+	for (const GraphicResourceDesc& res : sceneRes.InstanceBuffers)
+	{
+		InstanceBufferDef* ibDef = static_cast<InstanceBufferDef*>(res.Data);
+		_STL_ASSERT(ibDef != nullptr, "Error casting the resource to a instance buffer type");
+		DX12InstanceBuffer iBuffer;
+		std::string name = "InstanceBuffer ";
+		name.append(res.Id);
+		iBuffer.buffer = DX12Buffer::Create(device_.Get(), GetQueueSlotCount(), ibDef->size, ibDef->ptr, name);
+		iBuffer.instanceCount = ibDef->instanceCount;
+		resInstanceBuffers_[res.Id] = iBuffer;
+	}
+	for (const GraphicResourceDesc& res : sceneRes.RenderStates)
+	{
+		RenderStateDef* sDef = static_cast<RenderStateDef*>(res.Data);
+		_STL_ASSERT(sDef != nullptr, "Error casting the resource to a shader def type");
+		ID3D12RootSignature* pipeline = nullptr;
+		pipeline = sDef->instancing ? rootSignatureInstancing_.Get() : rootSignature_.Get();
+		if (resRenderStates_.find(sDef->shaderPath) == resRenderStates_.end()) // RenderState still doesn't exist
+			resRenderStates_[res.Id] = DX12RenderState::Create(device_.Get(), sDef->shaderPath, sDef->instancing);
 	}
 
 	uploadCommandList->Close();

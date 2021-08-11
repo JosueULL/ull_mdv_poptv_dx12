@@ -29,11 +29,13 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+
+#include "DX12Buffer.h"
 #include "DX12RenderState.h"
 
 class Mesh;
 class Texture;
-class GraphicResourceDesc;
+class SceneResourcesDesc;
 class FrameGraph;
 
 struct FrameGraphCamera;
@@ -42,7 +44,6 @@ struct FrameGraphCBuffer;
 
 struct DX12MeshBuffer;
 struct DX12Texture;
-struct DX12Buffer;
 struct DX12InstanceBuffer;
 
 
@@ -62,7 +63,7 @@ public:
 	void Initialize(const Window& window);
 	void Shutdown();
 
-	void LoadResources(std::vector<GraphicResourceDesc>);
+	void LoadResources(const SceneResourcesDesc& sceneRes);
 
 protected:
 	int GetQueueSlot () const
@@ -97,6 +98,13 @@ protected:
 	virtual void InitializeImpl (ID3D12GraphicsCommandList* uploadCommandList);
 	
 private:
+
+	struct SharedBuffer {
+		float elapsedTime;
+		float sinTime;
+		float pad2;
+		float pad3;
+	};
 	
 	void PrepareRender ();
 	void FinalizeRender ();
@@ -110,6 +118,7 @@ private:
 	void SetupSwapChain ();
 	void SetupRenderTargets ();
 
+	void UpdateSharedBuffer(ID3D12GraphicsCommandList* commandList);
 	void UpdateCBuffer(const FrameGraphCBuffer& cbuffer, ID3D12GraphicsCommandList* commandList);
 	void SetRenderState(std::string renderStateId, ID3D12GraphicsCommandList* commandList);
 
@@ -135,8 +144,8 @@ private:
 	std::unordered_map<std::string, DX12InstanceBuffer> resInstanceBuffers_;
 	std::unordered_map<std::string, DX12RenderState*> resRenderStates_;
 	DX12RenderState* currentRenderState_;
-	DX12RenderState* renderStateDefaultSimple;
-	DX12RenderState* renderStateDefaultInstanced;
+	DX12Buffer sharedBuffer;
+	SharedBuffer sharedBufferData;
 };
 
 #endif

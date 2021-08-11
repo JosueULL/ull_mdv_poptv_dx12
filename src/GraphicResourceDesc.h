@@ -1,21 +1,24 @@
 #pragma once
 
+#include "Common.h"
 #include <string>
+
 
 class GraphicResourceDesc {
 public:
-
-	enum class ResourceType {
-		Mesh,
-		Texture,
-		RenderState,
-		Material,
-		ConstantBuffer,
-		InstanceBuffer,
-	};
-
 	std::string Id;
-	ResourceType Type;
 	void* Data;
-};
 
+	GraphicResourceDesc() :
+		Id(""),
+		Data(nullptr)
+	{
+	}
+
+	template <class T>
+	void Release() {
+		T* data = (T*)Data;
+		SAFE_FREE(data);
+		Data = nullptr;
+	};
+};

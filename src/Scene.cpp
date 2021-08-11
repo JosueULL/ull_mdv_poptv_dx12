@@ -13,9 +13,6 @@
 #include "MeshIO.h"
 
 
-const std::string BuiltInRes::Mesh::Quad = "BuiltIn/Mesh/Quad";
-const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
-
  Scene::Scene() :
 	 sceneRes_(),
 	 objects_()
@@ -28,6 +25,7 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 
  Scene::~Scene() {
 	 sceneRes_.ReleaseAll();
+	 mainCam_ = nullptr;
 	 objects_.clear();
  }
 
@@ -35,17 +33,15 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
  {
 	 // Quad Mesh
 	 GraphicResourceDesc d = GraphicResourceDesc();
-	 d.Id = BuiltInRes::Mesh::Quad;
+	 d.Id = BUILTIN_MESH_QUAD;
 	 d.Data = new MeshQuad();
-	 d.Type = GraphicResourceDesc::ResourceType::Mesh;
-	 sceneRes_.Graphics.push_back(d);
+	 sceneRes_.Meshes.push_back(d);
 
 	 // Cube Mesh
 	 d = GraphicResourceDesc();
-	 d.Id = BuiltInRes::Mesh::Cube;
+	 d.Id = BUILTIN_MESH_CUBE;
 	 d.Data = new MeshCube();
-	 d.Type = GraphicResourceDesc::ResourceType::Mesh;
-	 sceneRes_.Graphics.push_back(d);
+	 sceneRes_.Meshes.push_back(d);
  }
 
 
@@ -56,24 +52,20 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 GraphicResourceDesc gr = GraphicResourceDesc();
 	 gr.Id = id;
 	 gr.Data = newObj->GetCBufferDef();
-	 gr.Type = GraphicResourceDesc::ResourceType::ConstantBuffer;
-	 sceneRes_.Graphics.push_back(gr);
+	 sceneRes_.ConstantBuffers.push_back(gr);
 
 	 return newObj;
  }
 
  Camera* Scene::AddMainCamera() {
-	 SceneObject* newObj = new SceneObject("mainCamera");
-	 objects_.push_back(std::unique_ptr<SceneObject>(newObj));
-
+	 SceneObject* newObj = AddObject("mainCameraObj");
 	 Camera* cam = newObj->AddComponent<Camera>();
-	 mainCam_.reset(cam);
+	 mainCam_ = cam;
 
 	 GraphicResourceDesc gr = GraphicResourceDesc();
 	 gr.Id = "mainCamera";
 	 gr.Data = cam->GetCBufferDef();
-	 gr.Type = GraphicResourceDesc::ResourceType::ConstantBuffer;
-	 sceneRes_.Graphics.push_back(gr);
+	 sceneRes_.ConstantBuffers.push_back(gr);
 
 	 return cam;
  }
@@ -85,8 +77,7 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 GraphicResourceDesc gr = GraphicResourceDesc();
 	 gr.Id = "uiCamera";
 	 gr.Data = uiCam_->GetCBufferDef();
-	 gr.Type = GraphicResourceDesc::ResourceType::ConstantBuffer;
-	 sceneRes_.Graphics.push_back(gr);
+	 sceneRes_.ConstantBuffers.push_back(gr);
 
 	 return uiCam_.get();
  }
@@ -98,8 +89,7 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 texture->data = LoadImageFromFile(path.c_str(), 1, &texture->width, &texture->height);
 	 d2.Id = id;
 	 d2.Data = texture;
-	 d2.Type = GraphicResourceDesc::ResourceType::Texture;
-	 sceneRes_.Graphics.push_back(d2);
+	 sceneRes_.Textures.push_back(d2);
 	 return texture;
  }
 
@@ -109,16 +99,14 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 RenderStateDef* shader = new RenderStateDef({ path, instancing });
 	 shaderGR.Id = path;
 	 shaderGR.Data = shader;
-	 shaderGR.Type = GraphicResourceDesc::ResourceType::RenderState;
-	 sceneRes_.Graphics.push_back(shaderGR);
+	 sceneRes_.RenderStates.push_back(shaderGR);
 
 	 GraphicResourceDesc matGR = GraphicResourceDesc();
 	 Material* mat = new Material();
 	 mat->SetShader(path);
 	 matGR.Id = id;
 	 matGR.Data = mat;
-	 matGR.Type = GraphicResourceDesc::ResourceType::Material;
-	 sceneRes_.Graphics.push_back(matGR);
+	 sceneRes_.Materials.push_back(matGR);
 
 	 return mat;
  }
@@ -129,13 +117,12 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 ui_.push_back(std::unique_ptr<SceneObject>(newObj));
 
 	 MeshRendererComponent* mr = newObj->AddComponent<MeshRendererComponent>();
-	 mr->SetMesh(BuiltInRes::Mesh::Quad);
+	 mr->SetMesh(BUILTIN_MESH_QUAD);
 
 	 GraphicResourceDesc gr = GraphicResourceDesc();
 	 gr.Id = id;
 	 gr.Data = newObj->GetCBufferDef();
-	 gr.Type = GraphicResourceDesc::ResourceType::ConstantBuffer;
-	 sceneRes_.Graphics.push_back(gr);
+	 sceneRes_.ConstantBuffers.push_back(gr);
 
 	 return newObj;
  }
@@ -146,8 +133,7 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 Mesh* mesh = LoadObjMeshFromFile(path.c_str());
 	 d2.Id = id;
 	 d2.Data = mesh;
-	 d2.Type = GraphicResourceDesc::ResourceType::Mesh;
-	 sceneRes_.Graphics.push_back(d2);
+	 sceneRes_.Meshes.push_back(d2);
 	 return mesh;
  }
 
@@ -161,8 +147,7 @@ const std::string BuiltInRes::Mesh::Cube = "BuiltIn/Mesh/Cube";
 	 GraphicResourceDesc gr = GraphicResourceDesc();
 	 gr.Id = bufferDef->id;
 	 gr.Data = bufferDef;
-	 gr.Type = GraphicResourceDesc::ResourceType::InstanceBuffer;
-	 sceneRes_.Graphics.push_back(gr);
+	 sceneRes_.InstanceBuffers.push_back(gr);
 
 	 return bufferDef;
  }

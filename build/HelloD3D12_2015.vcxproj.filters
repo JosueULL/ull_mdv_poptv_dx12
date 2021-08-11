@@ -45,6 +45,11 @@
     <ClCompile Include="..\src\LevelMap.cpp">
       <Filter>DemoGame</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\SceneResourcesDesc.cpp" />
+    <ClCompile Include="..\src\LevelCollisionComponent.cpp">
+      <Filter>DemoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Observer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ImageIO.h" />
@@ -108,7 +113,12 @@
       <Filter>DemoGame</Filter>
     </ClInclude>
     <ClInclude Include="..\src\RenderStateDef.h" />
-    <ClInclude Include="..\src\happly.h" />
+    <ClInclude Include="..\src\SystemTime.h" />
+    <ClInclude Include="..\src\Common.h" />
+    <ClInclude Include="..\src\LevelCollisionComponent.h">
+      <Filter>DemoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Observer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Requisitos.txt" />

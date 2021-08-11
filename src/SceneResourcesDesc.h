@@ -5,17 +5,21 @@
 
 class SceneResourcesDesc {
 public:
-	std::vector<GraphicResourceDesc> Graphics;
+	std::vector<GraphicResourceDesc> ConstantBuffers;
+	std::vector<GraphicResourceDesc> InstanceBuffers;
+	std::vector<GraphicResourceDesc> Textures;
+	std::vector<GraphicResourceDesc> Materials;
+	std::vector<GraphicResourceDesc> Meshes;
+	std::vector<GraphicResourceDesc> RenderStates;
 
-	void ReleaseAll() {
-		for (GraphicResourceDesc gd : Graphics) {
-			if (gd.Type == GraphicResourceDesc::ResourceType::Mesh ||
-				gd.Type == GraphicResourceDesc::ResourceType::Texture ||
-				gd.Type == GraphicResourceDesc::ResourceType::Material) {
-				delete gd.Data;
-				gd.Data = nullptr;
-			}
+	void ReleaseAll();
+
+private:
+	template <class T>
+	void Release(std::vector<GraphicResourceDesc>& resources) {
+		for (auto& grb : resources) {
+			grb.Release<T>();
 		}
-		Graphics.clear();
+		resources.clear();
 	}
 };

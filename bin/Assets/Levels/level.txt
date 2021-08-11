@@ -1,0 +1,36 @@
+﻿//"T" "L" "E" "J" dead end
+//"-" "|"corridor
+// "q""d" "p" "b" corner
+// "^" "<" ">" "_"
+
+LEVEL
+10 9
+###p^q####
+###< >####
+##p   q###
+#E     J##
+##<   >###
+##<   >###
+##b_ _d###
+####|#####
+####L#####
+END
+
+// X, Y, Rotation
+ENEMYPATH
+3 3 0
+5 5 0
+1 1 0
+END
+
+// X, Y, Rotation
+START
+4 8 -90
+END
+
+// X, Y, Rotation
+PICKUPS
+4 3
+5 3
+3 3
+END

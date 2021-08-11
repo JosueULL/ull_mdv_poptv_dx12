@@ -1,3 +1,4 @@
+#include "Common.h"
 #include "System.h"
 #include "Window.h"
 #include "Camera.h"
@@ -5,27 +6,30 @@
 
 Camera::Camera(SceneObject* owner) :
 	Component(owner),
-	cBuffer_(std::make_unique<ConstantBuffer>()),
-	cBufferDef_(std::make_unique<ConstantBufferDef>())
+	cBuffer_(new ConstantBuffer()),
+	cBufferDef_(new ConstantBufferDef())
 {
 	Window* window = System::instance().GetWindow();
-	cBuffer_.get()->view = glm::lookAtLH(glm::vec3( 0,0,0 ), { 0,0,1 }, { 0,1,0 });
-	cBuffer_.get()->proj = glm::perspectiveFovLH_ZO(glm::radians(45.0f), (float)window->GetWidth(), (float)window->GetHeight(), 0.1f, 1000.0f); //glm::orthoLH_ZO(-10.f, 10.f, -5.f, 5.f, 0.1f, 1000.0f);
+	cBuffer_->view = glm::lookAtLH(glm::vec3( 0,0,0 ), { 0,0,1 }, { 0,1,0 });
+	cBuffer_->proj = glm::perspectiveFovLH_ZO(glm::radians(45.0f), (float)window->GetWidth(), (float)window->GetHeight(), 0.1f, 1000.0f);
 	
-	ConstantBufferDef* cbd = cBufferDef_.get();
-	cbd->size = sizeof(ConstantBuffer);
-	cbd->ptr = cBuffer_.get();
+	cBufferDef_->size = sizeof(ConstantBuffer);
+	cBufferDef_->ptr = cBuffer_;
+}
+
+Camera::~Camera() {
+	SAFE_FREE(cBuffer_);
 }
 
 void Camera::Update() 
 {
 	Transform* t = GetTransform();
 	glm::mat4 view = glm::lookAtLH(t->GetLocalPosition(), t->GetLocalPosition() + t->GetForward(), t->GetUp());
-	cBuffer_.get()->view = view;
+	cBuffer_->view = view;
 }
 
 void Camera::SetOrthographic() 
 {
 	Window* window = System::instance().GetWindow();
-	cBuffer_.get()->proj = glm::orthoLH_ZO(0.0f, (float)window->GetWidth(), 0.0f, (float)window->GetHeight(), 0.1f, 1000.0f);
+	cBuffer_->proj = glm::orthoLH_ZO(0.0f, (float)window->GetWidth(), 0.0f, (float)window->GetHeight(), 0.1f, 1000.0f);
 }

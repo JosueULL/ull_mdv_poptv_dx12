@@ -18,22 +18,25 @@ DX12RenderState* DX12RenderState::Create(ID3D12Device* device, std::string shade
 
 
 void DX12RenderState::CreateRootSignature(ID3D12Device* device, bool instancing) {
-	CD3DX12_ROOT_PARAMETER parameters[3];
+	CD3DX12_ROOT_PARAMETER parameters[4];
 
 	// Create a descriptor table with one entry in our descriptor heap
 	CD3DX12_DESCRIPTOR_RANGE range{ D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0 };
 	parameters[0].InitAsDescriptorTable(1, &range);										// Add srv descriptor table (for textures)
 	parameters[1].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (camera data) as a descriptor
+	
 	if (instancing)
 		parameters[2].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add SRV for StructuredBuffer
 	else
 		parameters[2].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (object data) as a descriptor 
+	
+	parameters[3].InitAsConstantBufferView(2, 0, D3D12_SHADER_VISIBILITY_ALL);		// Add constant buffer view (shared data) as a descriptor
 
 	// We don't use another descriptor heap for the sampler, instead we use a static sampler
 	CD3DX12_STATIC_SAMPLER_DESC samplers[1];
 	samplers[0].Init(0, D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT);
 
-	CD3DX12_ROOT_SIGNATURE_DESC descRootSignature(3, parameters, 1, samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	CD3DX12_ROOT_SIGNATURE_DESC descRootSignature(4, parameters, 1, samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> rootBlob, errorBlob;
 	D3D12SerializeRootSignature(&descRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &rootBlob, &errorBlob);
@@ -82,6 +85,7 @@ void DX12RenderState::CreatePipelineState(ID3D12Device* device, std::string shad
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	// Simple alpha blending
+	/*
 	psoDesc.BlendState.RenderTarget[0].BlendEnable = true;
 	psoDesc.BlendState.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 	psoDesc.BlendState.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
@@ -90,6 +94,7 @@ void DX12RenderState::CreatePipelineState(ID3D12Device* device, std::string shad
 	psoDesc.BlendState.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	psoDesc.BlendState.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	psoDesc.BlendState.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	*/
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.DepthStencilState.DepthEnable = true;
 	psoDesc.DepthStencilState.StencilEnable = false;

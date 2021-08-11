@@ -1,3 +1,4 @@
+#include "SystemTime.h"
 #include "System.h"
 #include "Window.h"
 #include "Keyboard.h"
@@ -16,6 +17,7 @@ System::System(token) :
 	window_(nullptr),
 	scene_(nullptr),
 	keyboard_(std::make_unique<Keyboard>()),
+	time_(std::make_unique<SystemTime>()),
 	hInstance_(),
 	quit_(false)
 {
@@ -42,15 +44,14 @@ void System::Init(HINSTANCE hInstance)
 	TestScene* scene = new TestScene();
 	scene_.reset(scene);
 
-	backEndRenderer_->LoadResources(scene_->GetResourcesDesc().Graphics);
+	backEndRenderer_->LoadResources(scene_->GetResourcesDesc());
 }
 
 void System::Run() 
 {
 	while (!quit_) 
 	{
-		static int counter = 0;
-		counter++;
+		time_->UpdateFrameDelta();
 
 		ProcessMessageQueue();
 		keyboard_.get()->Update();
@@ -98,4 +99,5 @@ void System::Shutdown()
 	window_.reset();
 	scene_.reset();
 	keyboard_.reset();
+	time_.reset();
 }

@@ -12,6 +12,7 @@
 // Components ---- (needed for templates... find a solution?)
 #include "Camera.h"
 #include "MeshRendererComponent.h"
+#include "LevelCollisionComponent.h"
 
 class SceneObject {
 
@@ -23,6 +24,7 @@ public:
 
 	explicit SceneObject(std::string id);
 	SceneObject(const SceneObject&) = delete;
+	~SceneObject();
 
 	void Update();
 
@@ -31,11 +33,11 @@ public:
 	}
 
 	ConstantBufferDef* GetCBufferDef() {
-		return cBufferDef_.get();
+		return cBufferDef_;
 	}
 
 	ConstantBuffer* GetCBuffer() {
-		return cBuffer_.get();
+		return cBuffer_;
 	}
 
 	Transform* GetTransform() {
@@ -46,9 +48,13 @@ public:
 	T* AddComponent() 
 	{
 		Component* newCmp = new T(this);
+		AddComponent(newCmp);
+		return static_cast<T*>(newCmp);
+	}
+
+	void AddComponent(Component* newCmp) {
 		std::unique_ptr<Component> component = std::unique_ptr<Component>(newCmp);
 		components_.push_back(std::move(component));
-		return static_cast<T*>(newCmp);
 	}
 
 	template <class T>
@@ -66,8 +72,8 @@ public:
 
 private:
 	std::unique_ptr<Transform> transform_;
-	std::unique_ptr<ConstantBuffer> cBuffer_;
-	std::unique_ptr<ConstantBufferDef> cBufferDef_;
+	ConstantBuffer* cBuffer_;
+	ConstantBufferDef* cBufferDef_;
 	std::vector<std::unique_ptr<Component>> components_;
 	std::string id_;
 };

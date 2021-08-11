@@ -17,18 +17,20 @@ public:
 
 	COMPONENT_BASE(Camera)
 
+	~Camera();
+
 	ConstantBuffer* GetCBuffer() {
-		return cBuffer_.get();
+		return cBuffer_;
 	}
 
 	ConstantBufferDef* GetCBufferDef() {
-		return cBufferDef_.get();
+		return cBufferDef_;
 	}
 
 	void Update() override;
 	void SetOrthographic();
 
 private:
-	std::unique_ptr<ConstantBuffer> cBuffer_;
-	std::unique_ptr<ConstantBufferDef> cBufferDef_;
+	ConstantBuffer* cBuffer_;
+	ConstantBufferDef* cBufferDef_;
 };

@@ -100,6 +100,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Camera.h" />
+    <ClInclude Include="..\src\Common.h" />
     <ClInclude Include="..\src\Component.h" />
     <ClInclude Include="..\src\ConstantBufferDef.h" />
     <ClInclude Include="..\src\DX12Renderer.h" />
@@ -107,9 +108,9 @@
     <ClInclude Include="..\src\DX12RenderState.h" />
     <ClInclude Include="..\src\FPCameraCtrlComponent.h" />
     <ClInclude Include="..\src\FrontEndRenderer.h" />
-    <ClInclude Include="..\src\happly.h" />
     <ClInclude Include="..\src\InstancedMeshRendererComponent.h" />
     <ClInclude Include="..\src\Keyboard.h" />
+    <ClInclude Include="..\src\LevelCollisionComponent.h" />
     <ClInclude Include="..\src\LevelMap.h" />
     <ClInclude Include="..\src\Material.h" />
     <ClInclude Include="..\src\MemoryLeakDetector.h" />
@@ -121,6 +122,7 @@
     <ClInclude Include="..\src\MeshIO.h" />
     <ClInclude Include="..\src\MeshRendererComponent.h" />
     <ClInclude Include="..\src\MeshQuad.h" />
+    <ClInclude Include="..\src\Observer.h" />
     <ClInclude Include="..\src\RubyTexture.h" />
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\SceneObject.h" />
@@ -130,6 +132,7 @@
     <ClInclude Include="..\src\System.h" />
     <ClInclude Include="..\src\TestScene.h" />
     <ClInclude Include="..\src\Texture.h" />
+    <ClInclude Include="..\src\SystemTime.h" />
     <ClInclude Include="..\src\tiny_obj_loader.h" />
     <ClInclude Include="..\src\Transform.h" />
     <ClInclude Include="..\src\Utility.h" />
@@ -150,12 +153,15 @@
     <ClCompile Include="..\src\InstanceBufferDef.h" />
     <ClCompile Include="..\src\InstancedMeshRendererComponent.cpp" />
     <ClCompile Include="..\src\Keyboard.cpp" />
+    <ClCompile Include="..\src\LevelCollisionComponent.cpp" />
     <ClCompile Include="..\src\LevelMap.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\MeshCube.h" />
     <ClCompile Include="..\src\MeshIO.cpp" />
+    <ClCompile Include="..\src\Observer.cpp" />
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\SceneObject.cpp" />
+    <ClCompile Include="..\src\SceneResourcesDesc.cpp" />
     <ClCompile Include="..\src\System.cpp" />
     <ClCompile Include="..\src\TestScene.cpp" />
     <ClCompile Include="..\src\Transform.cpp" />

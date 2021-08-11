@@ -9,6 +9,11 @@ cbuffer ObjectConstants : register (b1)
 	float4x4 mWorld;
 }
 
+cbuffer SharedConstants : register (b2)
+{
+	float4 time; // elapsetTime, sin(elapsedTime)
+}
+
 struct VertexShaderOutput
 {
 	float4 position : SV_POSITION;
@@ -45,5 +50,5 @@ float4 PS_main(VertexShaderOutput IN) : SV_TARGET
 	float nDotL = clamp(dot(normalize(IN.wNormal), normalize(float3(0.25,1,0))), 0.25, 1);
 	float depth = IN.position.z / IN.position.w;
 	float3 col = mainTex.Sample(texureSampler, IN.uv) * nDotL * saturate(pow(depth,2.5));
-	return float4(IN.color,1);
+	return float4(col,1);
 }

@@ -29,6 +29,7 @@ void FPCameraCtrlComponent::Update() {
 	if (kb->IsKeyHeld('S')) {
 		pos -= transform->GetForward() * moveSpeed_;
 	}
+
 	if (kb->IsKeyHeld('A')) {
 		rot.y -= 2.5f;
 	}

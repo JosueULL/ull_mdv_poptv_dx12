@@ -2,7 +2,6 @@
 #include "MeshIO.h"
 #define TINYOBJLOADER_IMPLEMENTATION 
 #include "tiny_obj_loader.h"
-#include "happly.h"
 #include <iostream>
 
 
@@ -81,10 +80,11 @@ Mesh* LoadObjMeshFromFile(std::string inputfile)
 		vertex.normal.z = attrib.normals[3 * size_t(idx.normal_index) + 2];
 		vertex.uv.x = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
 		vertex.uv.y = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
+		/*
 		vertex.color.r = attrib.colors[3 * size_t(idx.vertex_index) + 0];
 		vertex.color.g = attrib.colors[3 * size_t(idx.vertex_index) + 1];
 		vertex.color.b = attrib.colors[3 * size_t(idx.vertex_index) + 2];
-		
+		*/
 		mesh->vertices[index] = vertex; //Copy vertex
 
 	}

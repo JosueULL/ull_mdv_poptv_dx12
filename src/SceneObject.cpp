@@ -1,17 +1,22 @@
+#include "Common.h"
 #include "SceneObject.h"
 #include <cmath>
 
 SceneObject::SceneObject(std::string id) :
 	transform_(std::make_unique<Transform>()),
-	cBuffer_(std::make_unique<ConstantBuffer>()),
-	cBufferDef_(std::make_unique<ConstantBufferDef>()),
+	cBuffer_(new ConstantBuffer()),
+	cBufferDef_(new ConstantBufferDef()),
 	components_(),
 	id_(id)
 {
-	cBuffer_.get()->model = transform_->GetModel();
-	ConstantBufferDef* cbd = cBufferDef_.get();
-	cbd->size = sizeof(SceneObject::ConstantBuffer);
-	cbd->ptr = cBuffer_.get();
+	cBuffer_->model = transform_->GetModel();
+	
+	cBufferDef_->size = sizeof(SceneObject::ConstantBuffer);
+	cBufferDef_->ptr = cBuffer_;
+}
+
+SceneObject::~SceneObject() {
+	SAFE_FREE(cBuffer_);
 }
 
 void SceneObject::Update() 
@@ -22,6 +27,6 @@ void SceneObject::Update()
 		c.get()->Update();
 	}
 
-	cBuffer_.get()->model = transform_->GetModel();
+	cBuffer_->model = transform_->GetModel();
 }
 

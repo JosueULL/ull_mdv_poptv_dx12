@@ -4,9 +4,10 @@ cbuffer CameraConstants : register (b0)
 	float4x4 mProj;
 }
 
-cbuffer ObjectConstants : register (b1)
+
+cbuffer SharedConstants : register (b2)
 {
-	float4x4 mWorld;
+	float4 time; // elapsetTime, sin(elapsedTime)
 }
 
 struct VertexShaderOutput

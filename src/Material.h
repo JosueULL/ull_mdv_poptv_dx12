@@ -32,7 +32,7 @@ public:
 		TextureBinds[rootIndex] = tb;
 	}
 
-	void SetShader(std::string id) {
+	void SetShader(const std::string& id) {
 		shader_ = id;
 	}
 

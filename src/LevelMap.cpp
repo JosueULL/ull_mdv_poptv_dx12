@@ -8,16 +8,21 @@
 
 LevelMap::LevelMap(Scene* scene, std::string levelPath) 
 {
-    scene->AddMesh("mesh.level.deadEnd", "Assets/Meshes/deadEnd.obj");
-    scene->AddMesh("mesh.level.sideWall", "Assets/Meshes/sideWall.obj");
-    scene->AddMesh("mesh.level.corridor", "Assets/Meshes/corridor.obj");
-	scene->AddMesh("mesh.level.noWall", "Assets/Meshes/noWall.obj");
-    scene->AddMesh("mesh.level.corner", "Assets/Meshes/corner.obj");
+    scene->AddMesh("mesh.level.deadEnd",    "Assets/Meshes/deadEnd.obj");
+    scene->AddMesh("mesh.level.sideWall",   "Assets/Meshes/sideWall.obj");
+    scene->AddMesh("mesh.level.corridor",   "Assets/Meshes/corridor.obj");
+	scene->AddMesh("mesh.level.noWall",     "Assets/Meshes/noWall.obj");
+    scene->AddMesh("mesh.level.corner",     "Assets/Meshes/corner.obj");
+    scene->AddMesh("mesh.level.key",        "Assets/Meshes/key.obj");
 
     scene->AddTexture("texture.level", "Assets/Textures/rock.jpg");
+    scene->AddTexture("texture.key", "Assets/Textures/key.jpg");
 
     Material* mat = scene->AddMaterial("mat.level", "Assets/Shaders/level.hlsl", true);
     mat->SetTexture(0, "texture.level");
+
+    Material* matkey = scene->AddMaterial("mat.key", "Assets/Shaders/instancedTexture.hlsl", false);
+    matkey->SetTexture(0, "texture.key");
 
 	std::ifstream infile(levelPath);
     std::string line;
@@ -30,10 +35,14 @@ LevelMap::LevelMap(Scene* scene, std::string levelPath)
             std::cout << "FOUNDLEVEL!" << std::endl;
             int w, h;
 
+            
             // First line expected to be level W,H
             std::getline(infile, line);
             std::istringstream iss(line);
             if (!(iss >> w >> h)) { break; } // error
+
+            width_ = w;
+            height_ = h;
 
             int y = 0;
             while (std::getline(infile, line))
@@ -43,13 +52,48 @@ LevelMap::LevelMap(Scene* scene, std::string levelPath)
 
                 for (int x = 0; x < w; ++x) {
                     char c = line[x];
-                    if (c != '#') {
+                    if (c != NOTHING) {
                         pieces_[c].push_back({ x, y });
+                        walkable_.push_back({ x, y });
                     }
                 }
                 ++y;
             }
         }
+
+        if (line.rfind("START", 0) == 0) {
+            int x, y, rot;
+
+            // First line expected to be level X,Y,ROTATION
+            std::getline(infile, line);
+            std::istringstream iss(line);
+            if (!(iss >> x >> y >> rot)) { break; } // error
+
+            start_ = glm::vec3(y * LEVEL_SCALE, 0, -x * LEVEL_SCALE);
+            startRot_ = rot;
+
+            while (std::getline(infile, line))
+                if (line.rfind("END", 0) == 0)
+                    break;
+        }
+
+        if (line.rfind("PICKUP", 0) == 0) {
+            
+            while (std::getline(infile, line))
+            {
+                if (line.rfind("END", 0) == 0)
+                    break;
+             
+                int x, y;
+
+                // First line expected to be level X,Y,ROTATION
+                std::istringstream iss(line);
+                if (!(iss >> x >> y)) { break; } // error
+
+                pickups_.push_back({ x, y });
+            }
+        }
+
         
         /*
         if (line.rfind("ENEMIES", 0) == 0) 
@@ -70,7 +114,16 @@ LevelMap::LevelMap(Scene* scene, std::string levelPath)
         */
     }
 
-    
+    int pickupCount = (int)pickups_.size();
+    pickupsBuffer_ = new InstancedMeshRendererComponent::InstanceData[pickupCount];
+    UpdatePickups();
+    InstanceBufferDef* pickupBufferDef = scene->AddInstanceBuffer("pickupInstanceBuffer", pickupsBuffer_, pickupCount, sizeof(InstancedMeshRendererComponent::InstanceData) * pickupCount);
+
+    SceneObject* pickupsObj = scene->AddObject("pickups");
+    MeshRendererComponent* mrc = pickupsObj->AddComponent<MeshRendererComponent>();
+    mrc->SetMesh("mesh.level.key");
+    mrc->SetMaterial(matkey);
+    mrc->SetInstanceBuffer(pickupBufferDef);
 
     for (auto const& x : pieces_)
     {
@@ -88,7 +141,7 @@ LevelMap::LevelMap(Scene* scene, std::string levelPath)
             else if (c == CORNER_270 || c == SIDEWALL_270 || c == DEADEND_270)
                 rotation = -90;
             
-            glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(piece.y * 2, 0, -piece.x * 2));
+            glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(piece.y * LEVEL_SCALE, 0, -piece.x * LEVEL_SCALE));
             t = glm::rotate(t, glm::radians((float)rotation), glm::vec3(0.0f, 1.0f, 0.0f));
             instanceBuffer[i] = { t };
             ++i;
@@ -115,5 +168,51 @@ LevelMap::LevelMap(Scene* scene, std::string levelPath)
 
         imrc->SetMaterial(mat);
         imrc->SetInstanceBuffer(iBufferDef);
+
+        buffers_[x.first] = instanceBuffer;
     }
+}
+
+void LevelMap::UpdatePickups()
+{
+    int index = 0;
+    for (auto const& p : pickups_)
+    {
+        glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(p.y * LEVEL_SCALE, 0, -p.x * LEVEL_SCALE));
+        pickupsBuffer_[index] = { t };
+        ++index;
+    }
+}
+
+void LevelMap::RegisterCollisionCallbacks(LevelCollisionComponent* col) {
+    OnPickupOverlapped = new Listener<LevelTile>([=](LevelTile lt) { this->OnPickupOverlappedCallback(lt); });
+
+    col->OnPickupOverlap->Attach(OnPickupOverlapped);
+}
+
+void LevelMap::OnPickupOverlappedCallback(LevelTile tile) {
+    for (auto& p : pickups_) {
+        if (p.x == tile.x && p.y == tile.y) {
+            // HACK - Quick way of making the pickup disappear
+            p.x = 10000;
+            p.y = 10000;
+            break;
+        }
+    }
+
+    UpdatePickups();
+}
+
+
+LevelMap::~LevelMap() {
+    for (auto const& b : buffers_)
+        delete[] b.second;
+
+    buffers_.clear();
+
+    delete pickupsBuffer_;
+
+    // TODO - Unregister from LevelCollisionComponent
+    delete OnPickupOverlapped;
+
 }

@@ -21,6 +21,7 @@
 //
 
 #include "System.h"
+#include "ImageIO.h"
 
 int WinMain (
 	_In_ HINSTANCE hInstance,

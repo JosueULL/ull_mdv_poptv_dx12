@@ -1,10 +1,16 @@
 #pragma once
 
+#include "Observer.h"
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <glm/glm.hpp>
+#include "InstancedMeshRendererComponent.h"
 
-class Scene;
+#define LEVEL_SCALE 2.0f
+
+#define NOTHING		'#'
+#define WALKABLE	' '
 
 #define DEADEND_0	'T'
 #define DEADEND_90	'E'
@@ -24,15 +30,46 @@ class Scene;
 #define SIDEWALL_180	'_'
 #define SIDEWALL_270	'>'
 
-struct LevelPieceEntry {
+
+class Scene;
+class LevelCollisionComponent;
+
+struct LevelTile {
 	int x;
 	int y;
 };
 
 class LevelMap
 {
-private:
-	std::unordered_map<char, std::vector<LevelPieceEntry>> pieces_;
+
 public:
 	LevelMap(Scene* scene, std::string levelPath);
+	~LevelMap();
+
+	glm::vec3 GetStart() const { return start_; }
+	int GetStartRotation() const { return startRot_; }
+	std::vector<LevelTile> GetWalkable() const { return walkable_; }
+	std::vector<LevelTile> GetPickups() const { return pickups_; }
+	int GetWidth() { return width_; }
+	int GetHeight() { return height_; }
+
+	void RegisterCollisionCallbacks(LevelCollisionComponent* col);
+	
+private:
+	glm::vec3 start_;
+	int startRot_;
+	int width_;
+	int height_;
+
+	void UpdatePickups();
+
+	std::vector<LevelTile> walkable_;
+	std::unordered_map<char, std::vector<LevelTile>> pieces_;
+	std::vector<LevelTile> pickups_;
+	std::unordered_map<char, InstancedMeshRendererComponent::InstanceData*> buffers_;
+	
+	InstancedMeshRendererComponent::InstanceData* pickupsBuffer_;
+
+	Listener<LevelTile>* OnPickupOverlapped;
+	void OnPickupOverlappedCallback(LevelTile tile);
 };

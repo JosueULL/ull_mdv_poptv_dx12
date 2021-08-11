@@ -66,4 +66,8 @@ public:
 			22, 23, 20,
 		};
 	}
+
+	~MeshCube() {
+		this->vertices.clear();
+	}
 };

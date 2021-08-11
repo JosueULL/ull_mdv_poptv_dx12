@@ -5,21 +5,19 @@ Root Signature & Descriptor tables
 5- Añadir UI (https://www.braynzarsoft.net/viewtutorial/q16390-11-drawing-text-in-directx-12)
 
 
-- Add dynamic material/shader creation (and disable blending by default FFS)
-- Fix memory leaks
-- Add Timer
-- Fix scene resource creation (so it is gathered from the sceneObjects instead?)
-
 DEMO Dungeon
+
 - Add transform hierarchy for lantern
-- Figure out collisions
 - Goals
 	- There are enemies with defined paths if they collide with the player, the player dies
 	- There are pickups needed to end the level
 	- If the player gets hit by an enemy a gameOver overlay is drawn, the camera drops and the game can be reset.
 
-- Dynamic instance buffers for enemies
 - Add pickups
+- Display pickups on UI
+- Add enemies with paths
+- Dynamic instance buffers for enemies
+- Game cycle
 
 6- Write docs
 

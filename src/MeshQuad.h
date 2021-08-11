@@ -15,4 +15,8 @@ public:
 
 		this->indices = { 0, 1, 2, 2, 3, 0 };
 	}
+
+	~MeshQuad() {
+		this->vertices.clear();
+	}
 };
