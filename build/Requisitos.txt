@@ -13,10 +13,8 @@ DEMO Dungeon
 	- There are pickups needed to end the level
 	- If the player gets hit by an enemy a gameOver overlay is drawn, the camera drops and the game can be reset.
 
-- Add pickups
-- Display pickups on UI
 - Add enemies with paths
-- Dynamic instance buffers for enemies
+- Add end gate and open when keys collected
 - Game cycle
 
 6- Write docs

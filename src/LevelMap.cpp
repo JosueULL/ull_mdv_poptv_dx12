@@ -8,6 +8,8 @@
 
 LevelMap::LevelMap(Scene* scene, std::string levelPath) 
 {
+    BIND_OBSERVER(OnPickupOverlap, LevelTile);
+
     scene->AddMesh("mesh.level.deadEnd",    "Assets/Meshes/deadEnd.obj");
     scene->AddMesh("mesh.level.sideWall",   "Assets/Meshes/sideWall.obj");
     scene->AddMesh("mesh.level.corridor",   "Assets/Meshes/corridor.obj");
@@ -185,12 +187,10 @@ void LevelMap::UpdatePickups()
 }
 
 void LevelMap::RegisterCollisionCallbacks(LevelCollisionComponent* col) {
-    OnPickupOverlapped = new Listener<LevelTile>([=](LevelTile lt) { this->OnPickupOverlappedCallback(lt); });
-
-    col->OnPickupOverlap->Attach(OnPickupOverlapped);
+    col->OnPickupOverlap->Attach(OnPickupOverlap);
 }
 
-void LevelMap::OnPickupOverlappedCallback(LevelTile tile) {
+void LevelMap::OnPickupOverlapCallback(LevelTile tile) {
     for (auto& p : pickups_) {
         if (p.x == tile.x && p.y == tile.y) {
             // HACK - Quick way of making the pickup disappear
@@ -213,6 +213,6 @@ LevelMap::~LevelMap() {
     delete pickupsBuffer_;
 
     // TODO - Unregister from LevelCollisionComponent
-    delete OnPickupOverlapped;
+    FREE_OBSERVER(OnPickupOverlap);
 
 }

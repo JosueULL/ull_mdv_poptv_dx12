@@ -49,7 +49,9 @@
     <ClCompile Include="..\src\LevelCollisionComponent.cpp">
       <Filter>DemoGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Observer.cpp" />
+    <ClCompile Include="..\src\GameUI.cpp">
+      <Filter>DemoGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ImageIO.h" />
@@ -119,6 +121,9 @@
       <Filter>DemoGame</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Observer.h" />
+    <ClInclude Include="..\src\GameUI.h">
+      <Filter>DemoGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Requisitos.txt" />

@@ -4,7 +4,7 @@
 
 LevelCollisionComponent::LevelCollisionComponent(SceneObject* owner) :
 	Component(owner),
-	OnPickupOverlap(std::make_shared<Delegate<LevelTile>>())
+	OnPickupOverlap(std::make_shared<Subject<LevelTile>>())
 {
 	
 }

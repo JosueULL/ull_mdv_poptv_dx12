@@ -108,6 +108,7 @@
     <ClInclude Include="..\src\DX12RenderState.h" />
     <ClInclude Include="..\src\FPCameraCtrlComponent.h" />
     <ClInclude Include="..\src\FrontEndRenderer.h" />
+    <ClInclude Include="..\src\GameUI.h" />
     <ClInclude Include="..\src\InstancedMeshRendererComponent.h" />
     <ClInclude Include="..\src\Keyboard.h" />
     <ClInclude Include="..\src\LevelCollisionComponent.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="..\src\FPCameraCtrlComponent.cpp" />
     <ClCompile Include="..\src\FrameGraph.h" />
     <ClCompile Include="..\src\FrontEndRenderer.cpp" />
+    <ClCompile Include="..\src\GameUI.cpp" />
     <ClCompile Include="..\src\ImageIO.cpp" />
     <ClCompile Include="..\src\InstanceBufferDef.h" />
     <ClCompile Include="..\src\InstancedMeshRendererComponent.cpp" />
@@ -158,7 +160,6 @@
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\MeshCube.h" />
     <ClCompile Include="..\src\MeshIO.cpp" />
-    <ClCompile Include="..\src\Observer.cpp" />
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\SceneObject.cpp" />
     <ClCompile Include="..\src\SceneResourcesDesc.cpp" />

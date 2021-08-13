@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common.h"
 #include "Observer.h"
 #include <string>
 #include <vector>
@@ -70,6 +71,5 @@ private:
 	
 	InstancedMeshRendererComponent::InstanceData* pickupsBuffer_;
 
-	Listener<LevelTile>* OnPickupOverlapped;
-	void OnPickupOverlappedCallback(LevelTile tile);
+	OBSERVER(OnPickupOverlap, LevelTile)
 };

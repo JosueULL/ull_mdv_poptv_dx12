@@ -20,7 +20,7 @@ public:
 
 	void BindToMap(LevelMap* map);
 
-	std::shared_ptr<Delegate<LevelTile>> OnPickupOverlap;
+	std::shared_ptr<Subject<LevelTile>> OnPickupOverlap;
 private:
 	glm::vec3 lastPos_;
 	LevelMap* map_;
