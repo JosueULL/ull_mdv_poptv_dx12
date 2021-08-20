@@ -38,6 +38,8 @@ public:
 
 	SceneObject* AddObject(std::string id);
 	SceneObject* AddUIElement(std::string id);
+	MeshRendererComponent* AddUISprite(std::string id, Material* mat, glm::vec2 pos, glm::vec2 size);
+	Material* AddSpriteMaterial(std::string id, std::string texturePath);
 	Camera* AddMainCamera();
 	Camera* AddUICamera();
 	Texture* AddTexture(std::string id, std::string path);

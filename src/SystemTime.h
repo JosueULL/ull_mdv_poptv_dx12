@@ -27,8 +27,8 @@ public:
     {
         LARGE_INTEGER li;
         QueryPerformanceCounter(&li);
-        frameDelta_ = double(li.QuadPart - lastFrameTime_) / timerFrequency_;
-        elapsedTime_ += frameDelta_ / 1000;
+        frameDelta_ = (double(li.QuadPart - lastFrameTime_) / timerFrequency_) / 1000;
+        elapsedTime_ += frameDelta_;
         if (frameDelta_ > 0)
             fps_ = (int)(1000 / frameDelta_);
         lastFrameTime_ = li.QuadPart;
@@ -36,7 +36,7 @@ public:
     }
 
     double GetElapsedTime() const { return elapsedTime_; }
-
+    double GetDeltaTime() const { return frameDelta_; }
 private:
     double timerFrequency_ = 0.0;
     long long lastFrameTime_ = 0;

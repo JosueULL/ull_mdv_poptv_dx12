@@ -3,6 +3,12 @@ cbuffer CameraConstants : register (b0)
 	float4x4 mView;
 	float4x4 mProj;
 }
+
+cbuffer SharedConstants : register (b2)
+{
+	float4 time; // elapsedTime, sin(elapsedTime)
+}
+
 cbuffer ObjectConstants : register (b1)
 {
 	float4x4 mWorld;

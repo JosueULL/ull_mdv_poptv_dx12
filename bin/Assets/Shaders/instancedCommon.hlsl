@@ -32,20 +32,3 @@ struct InstanceData
 StructuredBuffer<InstanceData> gInstanceData : register(t1);
 Texture2D<float4> mainTex : register(t0);
 SamplerState texureSampler      : register(s0);
-
-VertexShaderOutput VS_main(VertexShaderInput IN)
-{
-	VertexShaderOutput output;
-	InstanceData idata = gInstanceData[IN.instanceID];
-	float4x4 mvp = mul(mProj, mul(mView, idata.transform));	
-	output.position = mul(mvp, float4(IN.position.xyz, 1));
-	output.wNormal = mul(idata.transform, IN.normal);
-	output.uv = IN.uv;
-
-	return output;
-}
-
-float4 PS_main(VertexShaderOutput IN) : SV_TARGET
-{
-	return mainTex.Sample(texureSampler, IN.uv);
-}

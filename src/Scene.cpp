@@ -127,6 +127,30 @@
 	 return newObj;
  }
 
+ 
+ MeshRendererComponent* Scene::AddUISprite(std::string id, Material* mat, glm::vec2 pos, glm::vec2 size) {
+	 
+	 SceneObject* uiso = AddUIElement(id);
+	 uiso->GetTransform()->SetLocalScale({ size.x, size.y, 1 });
+	 uiso->GetTransform()->SetLocalPosition({ pos.x, pos.y, 1 });
+
+	 MeshRendererComponent* uiMR = uiso->GetComponent<MeshRendererComponent>();
+	 uiMR->SetMaterial(mat);
+
+	 return uiMR;
+ }
+
+
+ Material* Scene::AddSpriteMaterial(std::string idBase, std::string texturePath) {
+
+	 std::string texId = "tex.ui." + idBase;
+	 AddTexture(texId, texturePath);
+	 Material* mat = AddMaterial("mat.ui."+idBase, "Assets/Shaders/ui.hlsl", false);
+	 mat->SetTexture(0, texId);
+	 return mat;
+ }
+
+ 
 
  Mesh* Scene::AddMesh(std::string id, std::string path) {
 	 GraphicResourceDesc d2 = GraphicResourceDesc();

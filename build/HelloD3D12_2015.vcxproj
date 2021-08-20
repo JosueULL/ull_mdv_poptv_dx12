@@ -65,7 +65,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Strict</FloatingPointModel>
       <AdditionalIncludeDirectories>C:\Users\Josue\Desktop\Working Projects\ull_mdv_pov_dx12\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -114,6 +114,7 @@
     <ClInclude Include="..\src\LevelCollisionComponent.h" />
     <ClInclude Include="..\src\LevelMap.h" />
     <ClInclude Include="..\src\Material.h" />
+    <ClInclude Include="..\src\MathUtil.h" />
     <ClInclude Include="..\src\MemoryLeakDetector.h" />
     <ClInclude Include="..\src\DX12Texture.h" />
     <ClInclude Include="..\src\GraphicResourceDesc.h" />

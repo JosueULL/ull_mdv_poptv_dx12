@@ -4,14 +4,10 @@ cbuffer CameraConstants : register (b0)
 	float4x4 mProj;
 }
 
-cbuffer ObjectConstants : register (b1)
-{
-	float4x4 mWorld;
-}
 
 cbuffer SharedConstants : register (b2)
 {
-	float4 time; // elapsetTime, sin(elapsedTime)
+	float4 time; // elapsedTime, sin(elapsedTime)
 }
 
 struct VertexShaderOutput
@@ -22,20 +18,24 @@ struct VertexShaderOutput
 	float3 localPos : TEXCOORD1;
 };
 
-VertexShaderOutput VS_main(
-	float4 position : POSITION,
-	float3 normal : NORMAL,
-	float2 uv : TEXCOORD,
-	float3 color : COLOR)
+struct InstanceData
+{
+	float4x4 transform;	
+};
+
+StructuredBuffer<InstanceData> gInstanceData : register(t1);
+
+VertexShaderOutput VS_main(float4 position : POSITION, float3 normal : NORMAL, float2 uv : TEXCOORD,  uint instanceID : SV_InstanceID)
 {
 	VertexShaderOutput output;
 
-	float4x4 mvp = mul(mProj, mul(mView, mWorld));	
+	InstanceData idata = gInstanceData[instanceID];
+	float4x4 mvp = mul(mProj, mul(mView, idata.transform));	
 	output.localPos = position.xyz;
 	output.position = mul(mvp, float4(position.xyz, 1));
-	output.position.y += sin(time.x*2) * 0.1;
+	output.position.y += sin(time.x*5) * 0.25;
 
-	output.wNormal = mul(mWorld, normal);
+	output.wNormal = mul(idata.transform, normal);
 	output.uv = uv;
 
 	return output;
@@ -54,7 +54,7 @@ float4 PS_main(VertexShaderOutput IN) : SV_TARGET
 
 	float intensity = (IN.localPos.y + tCol2.b);
 	nDotL += tCol1.r*2;
-	depth *= depth*depth;
+	//depth *= depth*depth;
 	float3 col = nDotL * depth * tCol1.r * tCol2.g * lerp( float3(1,0, 0.25), float3(0.15,0.25,0.25), intensity*0.5);
 	//if (length(col)< 0.05)
 //		discard;

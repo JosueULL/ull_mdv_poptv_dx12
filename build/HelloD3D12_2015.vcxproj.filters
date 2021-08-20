@@ -124,6 +124,7 @@
     <ClInclude Include="..\src\GameUI.h">
       <Filter>DemoGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\MathUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Requisitos.txt" />

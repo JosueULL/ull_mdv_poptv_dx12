@@ -3,13 +3,16 @@ cbuffer CameraConstants : register (b0)
 	float4x4 mView;
 	float4x4 mProj;
 }
-cbuffer ObjectConstants : register (b1)
-{
-	float4x4 mWorld;
-}
+
 cbuffer SharedConstants : register (b2)
 {
 	float4 time; // elapsedTime, sin(elapsedTime)
+}
+
+
+cbuffer ObjectConstants : register (b1)
+{
+	float4x4 mWorld;
 }
 
 struct VertexShaderOutput
@@ -39,8 +42,12 @@ SamplerState texureSampler      : register(s0);
 
 float4 PS_main(VertexShaderOutput IN) : SV_TARGET
 {
-	float4 col = mainTex.Sample(texureSampler, IN.uv);
-	if (col.a < 0.1)
+	float4 tCol1 = mainTex.Sample(texureSampler, IN.uv*0.25 + float2(0,time.x*0.1));
+	float4 tCol2 = mainTex.Sample(texureSampler, IN.uv + tCol1.rg + float2(0,-time.x*0.25));
+	float center = abs((IN.uv.y-0.5)*2);
+	float border = 1-center;
+	if (border * tCol2.g < 0.025)
 		discard;
-	return col;
+
+	return lerp(float4(0,0,0,1), float4(0.025,0.025,0.9,1), pow(tCol2.r+border,2))*pow(IN.uv.y,2);
 }

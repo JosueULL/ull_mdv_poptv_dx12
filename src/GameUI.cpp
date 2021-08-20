@@ -1,41 +1,64 @@
 
 #include "GameUI.h"
+#include "TestScene.h"
 #include "Scene.h"
+#include "System.h"
 #include "LevelMap.h"
 
 GameUI::GameUI(Scene* scene, LevelMap* map) :
 	numKeys_(0)
 {
-	scene->AddTexture("ui.key", "Assets/Textures/keyUI.png");
-	scene->AddTexture("ui.nokey", "Assets/Textures/noKeyUI.png");
-
-	matKey_ = scene->AddMaterial("mat.ui.key", "Assets/Shaders/ui.hlsl", false);
-	matKey_->SetTexture(0, "ui.key");
-	matNoKey_ = scene->AddMaterial("mat.ui.key", "Assets/Shaders/ui.hlsl", false);
-	matNoKey_->SetTexture(0, "ui.nokey");
-
+	
+	matKey_ = scene->AddSpriteMaterial("key", "Assets/Textures/keyUI.png");
+	matNoKey_ = scene->AddSpriteMaterial("noKey", "Assets/Textures/noKeyUI.png");
+	
 	int pickups = (int)map->GetPickups().size();
 	for (int i = 0; i < pickups; ++i) {
 		std::string id = "uiKey";
 		id += std::to_string(i);
-		SceneObject* uiso = scene->AddUIElement(id);
-		uiso->GetTransform()->SetLocalScale({ 50, 50, 1 });
-		uiso->GetTransform()->SetLocalPosition({ 20 + 50 * (i + 1), 650, 1 });
-		MeshRendererComponent* uiMR = uiso->GetComponent<MeshRendererComponent>(); // NOT GREAT UIRenderer maybe?
-		uiMR->SetMaterial(matNoKey_);
+
+		MeshRendererComponent* uiMR = scene->AddUISprite(id, matNoKey_, {20 + 50 * (i + 1), 600}, { 50, 50 });
 		keyRenderers_.push_back(uiMR);
 	}
 
-	BIND_OBSERVER(OnPickupOverlap, LevelTile);
-}
+	Material* matKeysText = scene->AddSpriteMaterial("text.keys", "Assets/Textures/keys.png");
+	scene->AddUISprite("ui.keys.text", matKeysText, { 80, 670 }, { 94*0.5f, 50*0.5f });
 
+	Material* matGameOver = scene->AddSpriteMaterial("text.gameOver", "Assets/Textures/youDied.png");
+	gameOverSprite_ = scene->AddUISprite("ui.gameOver.text", matGameOver, { SCREENW * 0.5f, SCREENH * 0.5f - 50 }, { 580 * 0.5f, 100 * 0.5f });
+	gameOverSprite_->enabled = false;
+
+	Material* matWin = scene->AddSpriteMaterial("text.win", "Assets/Textures/youEscaped.png");
+	winSprite_ = scene->AddUISprite("ui.win.text", matWin, { SCREENW * 0.5f, SCREENH * 0.5f - 50 }, { 580 *0.5f, 100 * 0.5f });
+	winSprite_->enabled = false;
+
+}
 
 GameUI::~GameUI() {
-	FREE_OBSERVER(OnPickupOverlap);
 }
 
-void GameUI::OnPickupOverlapCallback(LevelTile tile) {
-	(void)tile;
-	keyRenderers_[numKeys_]->SetMaterial(matKey_);
-	++numKeys_;
+void GameUI::SetPickupTaken(int pickupIndex) {
+	keyRenderers_[pickupIndex]->SetMaterial(matKey_);
 }
+
+void GameUI::SetState(GameState state) {
+	switch (state) {
+	case GameState::Playing: {
+		winSprite_->enabled = false;
+		gameOverSprite_->enabled = false;
+		break;
+	}
+	case GameState::Defeat: {
+		winSprite_->enabled = false;
+		gameOverSprite_->enabled = true;
+		break;
+	}
+	case GameState::Victory: {
+		gameOverSprite_->enabled = false;
+		winSprite_->enabled = true;
+		break;
+	}
+	}
+	
+}
+

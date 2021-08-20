@@ -1,15 +1,11 @@
 #include "SystemTime.h"
 #include "System.h"
+#include "Scene.h"
 #include "Window.h"
 #include "Keyboard.h"
 #include "FrameGraph.h"
-#include "TestScene.h"
 #include "DX12Renderer.h"
 #include "FrontEndRenderer.h"
-
-#define APPNAME "Programación Optimizada : Proyecto final"
-#define SCREENW 1280
-#define SCREENH 720
 
 System::System(token) :
 	frontEndRenderer_(std::make_unique<FrontEndRenderer>()),
@@ -21,16 +17,16 @@ System::System(token) :
 	hInstance_(),
 	quit_(false)
 {
-#if DEBUG
-	mLeakDetector_.Start();
-#endif
+//#if DEBUG
+	//mLeakDetector_.Start();
+//#endif
 }
 
 System::~System() 
 {
-#if DEBUG
-	mLeakDetector_.Stop();
-#endif
+//#if DEBUG
+//	mLeakDetector_.Stop();
+//#endif
 }
 
 void System::Init(HINSTANCE hInstance)
@@ -40,10 +36,11 @@ void System::Init(HINSTANCE hInstance)
 
 	backEndRenderer_.reset(new DX12Renderer);
 	backEndRenderer_->Initialize(*window_);
+}
 
-	TestScene* scene = new TestScene();
+void System::LoadScene(Scene* scene) 
+{
 	scene_.reset(scene);
-
 	backEndRenderer_->LoadResources(scene_->GetResourcesDesc());
 }
 
@@ -58,7 +55,6 @@ void System::Run()
 		scene_.get()->Update();
 
 		const FrameGraph* fGraph = frontEndRenderer_.get()->GetSceneFrameGraph(scene_.get());
-		
 		backEndRenderer_->Render(fGraph);
 	}
 

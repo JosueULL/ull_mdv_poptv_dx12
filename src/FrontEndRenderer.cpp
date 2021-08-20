@@ -33,6 +33,10 @@ const FrameGraph* FrontEndRenderer::GetSceneFrameGraph(Scene* scene) {
     // Gather all mesh renderers from Objects
     std::vector<MeshRendererComponent*> renderers = scene->GetAllComponents<MeshRendererComponent>();
     for (MeshRendererComponent* renderer : renderers) {
+        
+        if (!renderer->enabled)
+            continue;
+
         SceneObject* sceneObj = renderer->GetSceneObject();
         FrameGraphMesh fGraphMesh;
         fGraphMesh.Id = renderer->GetMesh();
@@ -57,7 +61,11 @@ const FrameGraph* FrontEndRenderer::GetSceneFrameGraph(Scene* scene) {
 
     // Gather all mesh renderers from UI
     std::vector<MeshRendererComponent*> uirenderers = scene->GetAllUIComponents<MeshRendererComponent>();
-    for (MeshRendererComponent* renderer : uirenderers) {
+    for (MeshRendererComponent* renderer : uirenderers) 
+    {
+        if (!renderer->enabled)
+            continue;
+
         SceneObject* sceneObj = renderer->GetSceneObject();
         FrameGraphMesh fGraphMesh;
         fGraphMesh.Id = renderer->GetMesh();

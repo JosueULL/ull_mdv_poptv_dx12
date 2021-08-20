@@ -3,13 +3,15 @@
 #define TINYOBJLOADER_IMPLEMENTATION 
 #include "tiny_obj_loader.h"
 #include <iostream>
+#include <unordered_map>
 
 
 Mesh* LoadObjMeshFromFile(std::string inputfile) 
 {
 	Mesh* mesh = new Mesh();
-
+	/*
 	tinyobj::ObjReaderConfig reader_config;
+	reader_config.triangulate = true;
 	reader_config.mtl_search_path = "./"; // Path to material files
 
 	tinyobj::ObjReader reader;
@@ -78,15 +80,56 @@ Mesh* LoadObjMeshFromFile(std::string inputfile)
 		vertex.normal.x = attrib.normals[3 * size_t(idx.normal_index) + 0];
 		vertex.normal.y = attrib.normals[3 * size_t(idx.normal_index) + 1];
 		vertex.normal.z = attrib.normals[3 * size_t(idx.normal_index) + 2];
+		
 		vertex.uv.x = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
-		vertex.uv.y = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
-		/*
-		vertex.color.r = attrib.colors[3 * size_t(idx.vertex_index) + 0];
-		vertex.color.g = attrib.colors[3 * size_t(idx.vertex_index) + 1];
-		vertex.color.b = attrib.colors[3 * size_t(idx.vertex_index) + 2];
-		*/
+		vertex.uv.y = 1 - attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
+		
 		mesh->vertices[index] = vertex; //Copy vertex
 
+	}
+	*/
+
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
+
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile.c_str())) {
+		throw std::runtime_error(warn + err);
+	}
+
+	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+
+	for (const auto& shape : shapes) {
+		for (const auto& index : shape.mesh.indices) {
+			Vertex vertex{};
+
+			vertex.position = {
+				attrib.vertices[3 * index.vertex_index + 0],
+				attrib.vertices[3 * index.vertex_index + 1],
+				attrib.vertices[3 * index.vertex_index + 2]
+			};
+
+			vertex.normal = {
+				attrib.normals[3 * index.normal_index + 0],
+				attrib.normals[3 * index.normal_index + 1],
+				attrib.normals[3 * index.normal_index + 2]
+			};
+
+			vertex.uv = {
+				attrib.texcoords[2 * index.texcoord_index + 0],
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+			};
+
+			vertex.color = { 1.0f, 1.0f, 1.0f };
+
+			if (uniqueVertices.count(vertex) == 0) {
+				uniqueVertices[vertex] = static_cast<uint32_t>(mesh->vertices.size());
+				mesh->vertices.push_back(vertex);
+			}
+
+			mesh->indices.push_back(uniqueVertices[vertex]);
+		}
 	}
 
 	return mesh;

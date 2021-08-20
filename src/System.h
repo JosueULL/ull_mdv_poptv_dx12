@@ -4,6 +4,9 @@
 #include "Singleton.h"
 #include "MemoryLeakDetector.h"
 
+#define APPNAME "Programación Optimizada : Proyecto final"
+#define SCREENW 1280
+#define SCREENH 720
 
 class Scene;
 class Window;
@@ -18,6 +21,7 @@ public:
 	System(token);
 	~System();
 	void Init(HINSTANCE hInstance);
+	void LoadScene(Scene* startScene);
 	void Run();
 
 	Window* GetWindow() const { return window_.get(); }

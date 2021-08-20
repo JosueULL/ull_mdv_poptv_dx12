@@ -21,10 +21,10 @@ SceneObject::~SceneObject() {
 
 void SceneObject::Update() 
 {
-
 	for (const auto& c : components_) 
 	{
-		c.get()->Update();
+		if (c.get()->enabled)
+			c.get()->Update();
 	}
 
 	cBuffer_->model = transform_->GetModel();

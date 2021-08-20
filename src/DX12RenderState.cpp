@@ -23,12 +23,12 @@ void DX12RenderState::CreateRootSignature(ID3D12Device* device, bool instancing)
 	// Create a descriptor table with one entry in our descriptor heap
 	CD3DX12_DESCRIPTOR_RANGE range{ D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0 };
 	parameters[0].InitAsDescriptorTable(1, &range);										// Add srv descriptor table (for textures)
-	parameters[1].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (camera data) as a descriptor
+	parameters[1].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_ALL);		// Add constant buffer view (camera data) as a descriptor
 	
 	if (instancing)
-		parameters[2].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add SRV for StructuredBuffer
+		parameters[2].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_ALL);		// Add SRV for StructuredBuffer
 	else
-		parameters[2].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);		// Add constant buffer view (object data) as a descriptor 
+		parameters[2].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_ALL);		// Add constant buffer view (object data) as a descriptor 
 	
 	parameters[3].InitAsConstantBufferView(2, 0, D3D12_SHADER_VISIBILITY_ALL);		// Add constant buffer view (shared data) as a descriptor
 
@@ -84,6 +84,7 @@ void DX12RenderState::CreatePipelineState(ID3D12Device* device, std::string shad
 	psoDesc.InputLayout.pInputElementDescs = layout;
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	
 	// Simple alpha blending
 	/*
 	psoDesc.BlendState.RenderTarget[0].BlendEnable = true;

@@ -19,10 +19,13 @@ public:
 	virtual ~Component() {};
 	Component(const Component&) = delete;
 
-	explicit Component(SceneObject* owner) :
-		sceneObj_(owner)
-	{
+	bool enabled;
 
+	explicit Component(SceneObject* owner) :
+		sceneObj_(owner),
+		enabled(true)
+	{
+		
 	}
 
 	SceneObject* GetSceneObject() { return sceneObj_; }

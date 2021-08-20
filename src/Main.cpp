@@ -21,6 +21,7 @@
 //
 
 #include "System.h"
+#include "TestScene.h"
 #include "ImageIO.h"
 
 int WinMain (
@@ -34,6 +35,8 @@ int WinMain (
 	{
 		auto& system = System::instance();
 		system.Init(hInstance);
+		TestScene* scene = new TestScene();
+		system.LoadScene(scene);
 		system.Run();
 	}
 
