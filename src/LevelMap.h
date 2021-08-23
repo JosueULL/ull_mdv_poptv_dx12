@@ -53,6 +53,11 @@ struct LevelEnemy {
 	float yaw;
 };
 
+struct LevelPiece {
+	float yaw;
+	LevelTile tile;
+};
+
 class LevelMap
 {
 
@@ -101,7 +106,7 @@ private:
 	void UpdateEnemies();
 
 	std::vector<LevelTile> walkable_;
-	std::unordered_map<char, std::vector<LevelTile>> pieces_;
+	std::unordered_map<char, std::vector<LevelPiece>> pieces_;
 	std::vector<LevelTile> pickups_;
 	std::vector<LevelEnemy> enemies_;
 	std::unordered_map<char, InstancedMeshRendererComponent::InstanceData*> buffers_;

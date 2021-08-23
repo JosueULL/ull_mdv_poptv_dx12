@@ -500,7 +500,7 @@ void DX12Renderer::InitializeImpl (ID3D12GraphicsCommandList * /*uploadCommandLi
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void DX12Renderer::Shutdown ()
+void DX12Renderer::Shutdown()
 {
 	// Drain the queue, wait for everything to finish
 	for (int i = 0; i < GetQueueSlotCount(); ++i) {

@@ -30,6 +30,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "BackEndRenderer.h"
 #include "DX12Buffer.h"
 #include "DX12RenderState.h"
 
@@ -50,20 +51,19 @@ struct DX12InstanceBuffer;
 class Window;
 
 ///////////////////////////////////////////////////////////////////////////////
-class DX12Renderer
+class DX12Renderer : public BackEndRenderer
 {
 public:
 	DX12Renderer (const DX12Renderer&) = delete;
 	DX12Renderer& operator= (const DX12Renderer&) = delete;
 
 	DX12Renderer ();
-	virtual ~DX12Renderer ();
+	~DX12Renderer ();
 
-	void Render(const FrameGraph* frameGraph);
-	void Initialize(const Window& window);
-	void Shutdown();
-
-	void LoadResources(const SceneResourcesDesc& sceneRes);
+	virtual void Render(const FrameGraph* frameGraph);
+	virtual void Initialize(const Window& window);
+	virtual void Shutdown();
+	virtual void LoadResources(const SceneResourcesDesc& sceneRes);
 
 protected:
 	int GetQueueSlot () const

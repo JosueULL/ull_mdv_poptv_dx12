@@ -27,6 +27,7 @@
 #include <wincodec.h>
 // for _com_error
 #include <comdef.h>
+#include <fstream>
 
 #include <stdexcept>
 
@@ -80,6 +81,11 @@ std::vector<std::uint8_t> LoadInternal(ComPtr<IWICImagingFactory> factory, ComPt
 std::vector<std::uint8_t> LoadImageFromFile (const char* path, const int rowAlignment,
 	int* outputWidth, int* outputHeight)
 {
+	std::ifstream ifs(path);
+	std::string errorS = "Texture file not found :";
+	errorS += path;
+	_STL_ASSERT(ifs.good(), errorS.c_str());
+
 	ComPtr<IWICImagingFactory> factory;
 	HRESULT hr = CoCreateInstance (
 		CLSID_WICImagingFactory,

@@ -12,7 +12,6 @@
 #include "ImageIO.h"
 #include "MeshIO.h"
 
-
  Scene::Scene() :
 	 sceneRes_(),
 	 objects_()
@@ -58,12 +57,12 @@
  }
 
  Camera* Scene::AddMainCamera() {
-	 SceneObject* newObj = AddObject("mainCameraObj");
+	 SceneObject* newObj = AddObject("mainCamera");
 	 Camera* cam = newObj->AddComponent<Camera>();
 	 mainCam_ = cam;
 
 	 GraphicResourceDesc gr = GraphicResourceDesc();
-	 gr.Id = "mainCamera";
+	 gr.Id = ID_MAINCAM_BUFFER;
 	 gr.Data = cam->GetCBufferDef();
 	 sceneRes_.ConstantBuffers.push_back(gr);
 
@@ -75,7 +74,7 @@
 	 uiCam_->SetOrthographic();
 
 	 GraphicResourceDesc gr = GraphicResourceDesc();
-	 gr.Id = "uiCamera";
+	 gr.Id = ID_UICAM_BUFFER;
 	 gr.Data = uiCam_->GetCBufferDef();
 	 sceneRes_.ConstantBuffers.push_back(gr);
 

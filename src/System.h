@@ -1,17 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include "Singleton.h"
 #include "MemoryLeakDetector.h"
-
-#define APPNAME "Programación Optimizada : Proyecto final"
-#define SCREENW 1280
-#define SCREENH 720
 
 class Scene;
 class Window;
 class Keyboard;
-class DX12Renderer;
+class BackEndRenderer;
 class FrontEndRenderer;
 class SystemTime;
 
@@ -20,7 +17,7 @@ class System : public Singleton<System>
 public:
 	System(token);
 	~System();
-	void Init(HINSTANCE hInstance);
+	void Init(HINSTANCE hInstance, std::string name, int w, int h);
 	void LoadScene(Scene* startScene);
 	void Run();
 
@@ -33,7 +30,7 @@ private:
 	void ProcessMessageQueue();
 
 	std::unique_ptr<FrontEndRenderer> frontEndRenderer_;
-	std::unique_ptr<DX12Renderer> backEndRenderer_;
+	std::unique_ptr<BackEndRenderer> backEndRenderer_;
 	std::unique_ptr<Window> window_;
 	std::unique_ptr<Scene> scene_;
 	std::unique_ptr<Keyboard> keyboard_;

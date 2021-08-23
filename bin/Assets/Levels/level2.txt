@@ -1,0 +1,23 @@
+//"T" "L" "E" "J" dead end
+//"-" "|"corridor
+// "q""d" "p" "b" corner
+// "^" "<" ">" "_" side wall
+
+// Creación de un pasillo con dos salidas muertas a cada lado
+LEVEL
+5 5
+#####
+##T##
+##|##
+##L##
+#####
+END
+
+// X, Y, Rotation
+START
+2 1 0
+END
+
+EXIT
+2 3 0
+END

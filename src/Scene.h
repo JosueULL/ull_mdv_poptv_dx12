@@ -15,6 +15,8 @@ class Material;
 #define BUILTIN_MESH_QUAD "BuiltIn/Mesh/Quad"
 #define BUILTIN_MESH_CUBE "BuiltIn/Mesh/Cube"
 
+#define ID_MAINCAM_BUFFER "camBuffer.mainCamera";
+#define ID_UICAM_BUFFER "camBuffer.uiCamera";
 
 class Scene {
 private:

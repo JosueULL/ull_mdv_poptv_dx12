@@ -7,6 +7,8 @@
 #include "DX12Renderer.h"
 #include "FrontEndRenderer.h"
 
+#define CHECKLEAKS false
+
 System::System(token) :
 	frontEndRenderer_(std::make_unique<FrontEndRenderer>()),
 	backEndRenderer_(nullptr),
@@ -17,22 +19,22 @@ System::System(token) :
 	hInstance_(),
 	quit_(false)
 {
-//#if DEBUG
-	//mLeakDetector_.Start();
-//#endif
+#if CHECKLEAKS
+	mLeakDetector_.Start();
+#endif
 }
 
 System::~System() 
 {
-//#if DEBUG
-//	mLeakDetector_.Stop();
-//#endif
+#if CHECKLEAKS
+	mLeakDetector_.Stop();
+#endif
 }
 
-void System::Init(HINSTANCE hInstance)
+void System::Init(HINSTANCE hInstance, std::string name, int w, int h)
 {
 	hInstance_ = hInstance;
-	window_.reset(new Window(hInstance_, APPNAME, SCREENW, SCREENH));
+	window_.reset(new Window(hInstance_, name, w, h));
 
 	backEndRenderer_.reset(new DX12Renderer);
 	backEndRenderer_->Initialize(*window_);
@@ -51,10 +53,10 @@ void System::Run()
 		time_->UpdateFrameDelta();
 
 		ProcessMessageQueue();
-		keyboard_.get()->Update();
-		scene_.get()->Update();
+		keyboard_->Update();
+		scene_->Update();
 
-		const FrameGraph* fGraph = frontEndRenderer_.get()->GetSceneFrameGraph(scene_.get());
+		const FrameGraph* fGraph = frontEndRenderer_->GetSceneFrameGraph(scene_.get());
 		backEndRenderer_->Render(fGraph);
 	}
 

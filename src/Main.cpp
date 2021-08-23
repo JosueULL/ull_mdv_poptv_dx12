@@ -22,6 +22,7 @@
 
 #include "System.h"
 #include "TestScene.h"
+#include "SimpleScene.h"
 #include "ImageIO.h"
 
 int WinMain (
@@ -34,8 +35,9 @@ int WinMain (
 
 	{
 		auto& system = System::instance();
-		system.Init(hInstance);
+		system.Init(hInstance, "Programación Optimizada : Proyecto final", 1280, 720);
 		TestScene* scene = new TestScene();
+		//SimpleScene* scene = new SimpleScene();
 		system.LoadScene(scene);
 		system.Run();
 	}

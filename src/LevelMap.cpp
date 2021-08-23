@@ -59,7 +59,25 @@ void LevelMap::ParseLevelFile(std::string levelPath)
                 for (int x = 0; x < w; ++x) {
                     char c = line[x];
                     if (c != NOTHING) {
-                        pieces_[c].push_back({ x, y });
+                        float yaw = 0;
+                        if (c == CORNER_90 || c == CORRIDOR_90 || c == SIDEWALL_90 || c == DEADEND_90)
+                            yaw = 90;
+                        else if (c == CORNER_180 || c == SIDEWALL_180 || c == DEADEND_180)
+                            yaw = 180;
+                        else if (c == CORNER_270 || c == SIDEWALL_270 || c == DEADEND_270)
+                            yaw = 270;
+
+                        // Once rotation stored, reset to use original piece
+                        if (c == CORNER_90 || c == CORNER_180 || c == CORNER_270)
+                            c = CORNER_0; 
+                        else if (c == SIDEWALL_90 || c == SIDEWALL_180 || c == SIDEWALL_270)
+                            c = SIDEWALL_0;
+                        else if (c == DEADEND_90 || c == DEADEND_180 || c == DEADEND_270)
+                            c = DEADEND_0;
+                        else if (c == CORRIDOR_90) 
+                            c = CORRIDOR_0;
+
+                        pieces_[c].push_back({ yaw, {x, y} });
                         walkable_.push_back({ x, y });
                     }
                 }
@@ -116,7 +134,6 @@ void LevelMap::ParseLevelFile(std::string levelPath)
             }
         }
 
-
         if (line.rfind("ENEMYPATH", 0) == 0)
         {
             std::vector<LevelTile> enemyPath;
@@ -142,6 +159,7 @@ void LevelMap::ParseLevelFile(std::string levelPath)
 }
 
 void LevelMap::InstantiateLevelContent(Scene* scene) {
+    scene->AddTexture("texture.noise", "Assets/Textures/noise.jpg");
 
     // Pickups ----------------------------------
     if (pickups_.size() > 0) {
@@ -166,8 +184,7 @@ void LevelMap::InstantiateLevelContent(Scene* scene) {
     // Enemies ----------------------------------
     if (enemies_.size() > 0) {
         scene->AddMesh("mesh.level.enemy", "Assets/Meshes/skull.obj");
-        scene->AddTexture("texture.noise", "Assets/Textures/noise.jpg");
-
+        
         Material* matEnemy = scene->AddMaterial("mat.enemy", "Assets/Shaders/skull.hlsl", true);
         matEnemy->SetTexture(0, "texture.noise");
 
@@ -216,18 +233,8 @@ void LevelMap::InstantiateLevelContent(Scene* scene) {
         InstancedMeshRendererComponent::InstanceData* instanceBuffer = new InstancedMeshRendererComponent::InstanceData[count];
         int i = 0;
         for (auto const& piece : x.second) {
-            int rotation = 0;
-            char c = x.first;
-            
-            if (c == CORNER_90 || c == CORRIDOR_90 || c == SIDEWALL_90 || c == DEADEND_90)
-                rotation = 90;
-            else if (c == CORNER_180 || c == SIDEWALL_180 || c == DEADEND_180)
-                rotation = 180;
-            else if (c == CORNER_270 || c == SIDEWALL_270 || c == DEADEND_270)
-                rotation = 270;
-            
-            glm::mat4 t = glm::translate(glm::mat4(1.0f), LevelToWorld(piece));
-            t = glm::rotate(t, -glm::radians((float)rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::mat4 t = glm::translate(glm::mat4(1.0f), LevelToWorld(piece.tile));
+            t = glm::rotate(t, -glm::radians((float)piece.yaw), glm::vec3(0.0f, 1.0f, 0.0f));
             instanceBuffer[i] = { t };
             ++i;
         }
@@ -240,13 +247,13 @@ void LevelMap::InstantiateLevelContent(Scene* scene) {
         objId.push_back(x.first);
         SceneObject* so3 = scene->AddObject(objId);
         MeshRendererComponent* imrc = so3->AddComponent<MeshRendererComponent>();
-        if (x.first == DEADEND_0 || x.first == DEADEND_90 || x.first == DEADEND_180 || x.first == DEADEND_270)
+        if (x.first == DEADEND_0)
             imrc->SetMesh("mesh.level.deadEnd");
-        else if (x.first == CORRIDOR_0 || x.first == CORRIDOR_90)
+        else if (x.first == CORRIDOR_0)
             imrc->SetMesh("mesh.level.corridor");
-        else if (x.first == CORNER_0 || x.first == CORNER_90 || x.first == CORNER_180 || x.first == CORNER_270)
+        else if (x.first == CORNER_0)
             imrc->SetMesh("mesh.level.corner");
-        else if (x.first == SIDEWALL_0 || x.first == SIDEWALL_90 || x.first == SIDEWALL_180 || x.first == SIDEWALL_270)
+        else if (x.first == SIDEWALL_0)
             imrc->SetMesh("mesh.level.sideWall");
         else
             imrc->SetMesh("mesh.level.noWall");
