@@ -46,7 +46,7 @@ public:
 	Camera* AddUICamera();
 	Texture* AddTexture(std::string id, std::string path);
 	Mesh* AddMesh(std::string id, std::string path);
-	Material* AddMaterial(std::string id, std::string shaderpath, bool instancing);
+	Material* AddMaterial(std::string id, std::string shaderpath, bool instancing, bool compileShader);
 	InstanceBufferDef* AddInstanceBuffer(std::string id, void* data, int count, int size);
 
 	const SceneResourcesDesc& GetResourcesDesc() { return sceneRes_; };

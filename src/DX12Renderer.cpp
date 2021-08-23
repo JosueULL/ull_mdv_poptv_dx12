@@ -51,8 +51,8 @@
 #undef max
 #endif
 
-#define RENDERSTATE_DEFAULT "Assets/Shaders/baseTexture.hlsl"
-#define RENDERSTATE_DEFAULT_INSTANCED "Assets/Shaders/instancedTexture.hlsl"
+#define RENDERSTATE_DEFAULT "Assets/Shaders/singleTexture"
+#define RENDERSTATE_DEFAULT_INSTANCED "Assets/Shaders/instancedTexture"
 
 using namespace Microsoft::WRL;
 
@@ -581,8 +581,8 @@ void DX12Renderer::CreateViewportScissor (const Window& window)
 
 ///////////////////////////////////////////////////////////////////////////////
 void DX12Renderer::CreateDefaultRenderStates() {
-	resRenderStates_[RENDERSTATE_DEFAULT] = DX12RenderState::Create(device_.Get(), RENDERSTATE_DEFAULT, false);
-	resRenderStates_[RENDERSTATE_DEFAULT_INSTANCED] = DX12RenderState::Create(device_.Get(), RENDERSTATE_DEFAULT_INSTANCED, true);
+	resRenderStates_[RENDERSTATE_DEFAULT] = DX12RenderState::Create(device_.Get(), RENDERSTATE_DEFAULT, false, false);
+	resRenderStates_[RENDERSTATE_DEFAULT_INSTANCED] = DX12RenderState::Create(device_.Get(), RENDERSTATE_DEFAULT_INSTANCED, true, false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -645,7 +645,7 @@ void DX12Renderer::LoadResources(const SceneResourcesDesc& sceneRes) {
 		ID3D12RootSignature* pipeline = nullptr;
 		pipeline = sDef->instancing ? rootSignatureInstancing_.Get() : rootSignature_.Get();
 		if (resRenderStates_.find(sDef->shaderPath) == resRenderStates_.end()) // RenderState still doesn't exist
-			resRenderStates_[res.Id] = DX12RenderState::Create(device_.Get(), sDef->shaderPath, sDef->instancing);
+			resRenderStates_[res.Id] = DX12RenderState::Create(device_.Get(), sDef->shaderPath, sDef->instancing, sDef->compileShader);
 	}
 
 	uploadCommandList->Close();

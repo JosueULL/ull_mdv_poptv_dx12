@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "System.h"
 #include "LevelMap.h"
+#include "Window.h"
 
 GameUI::GameUI(Scene* scene, LevelMap* map) :
 	numKeys_(0)
@@ -21,15 +22,18 @@ GameUI::GameUI(Scene* scene, LevelMap* map) :
 		keyRenderers_.push_back(uiMR);
 	}
 
+	int w = System::instance().GetWindow()->GetWidth();
+	int h = System::instance().GetWindow()->GetWidth();
+
 	Material* matKeysText = scene->AddSpriteMaterial("text.keys", "Assets/Textures/keys.png");
 	scene->AddUISprite("ui.keys.text", matKeysText, { 80, 670 }, { 94*0.5f, 50*0.5f });
 
 	Material* matGameOver = scene->AddSpriteMaterial("text.gameOver", "Assets/Textures/youDied.png");
-	gameOverSprite_ = scene->AddUISprite("ui.gameOver.text", matGameOver, { SCREENW * 0.5f, SCREENH * 0.5f - 50 }, { 580 * 0.5f, 100 * 0.5f });
+	gameOverSprite_ = scene->AddUISprite("ui.gameOver.text", matGameOver, { w * 0.5f, h * 0.5f - 50 }, { 580 * 0.5f, 100 * 0.5f });
 	gameOverSprite_->enabled = false;
 
 	Material* matWin = scene->AddSpriteMaterial("text.win", "Assets/Textures/youEscaped.png");
-	winSprite_ = scene->AddUISprite("ui.win.text", matWin, { SCREENW * 0.5f, SCREENH * 0.5f - 50 }, { 580 *0.5f, 100 * 0.5f });
+	winSprite_ = scene->AddUISprite("ui.win.text", matWin, { w * 0.5f, h * 0.5f - 50 }, { 580 *0.5f, 100 * 0.5f });
 	winSprite_->enabled = false;
 
 }

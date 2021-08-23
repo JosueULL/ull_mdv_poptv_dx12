@@ -43,7 +43,6 @@
 	 sceneRes_.Meshes.push_back(d);
  }
 
-
  SceneObject* Scene::AddObject(std::string id) {
 	 SceneObject* newObj = new SceneObject(id);
 	 objects_.push_back(std::unique_ptr<SceneObject>(newObj));
@@ -81,7 +80,6 @@
 	 return uiCam_.get();
  }
 
-
  Texture* Scene::AddTexture(std::string id, std::string path) {
 	 GraphicResourceDesc d2 = GraphicResourceDesc();
 	 Texture* texture = new Texture();
@@ -92,10 +90,10 @@
 	 return texture;
  }
 
- Material* Scene::AddMaterial(std::string id, std::string path, bool instancing) 
+ Material* Scene::AddMaterial(std::string id, std::string path, bool instancing, bool compileShader) 
  {
 	 GraphicResourceDesc shaderGR = GraphicResourceDesc();
-	 RenderStateDef* shader = new RenderStateDef({ path, instancing });
+	 RenderStateDef* shader = new RenderStateDef({ path, instancing, compileShader });
 	 shaderGR.Id = path;
 	 shaderGR.Data = shader;
 	 sceneRes_.RenderStates.push_back(shaderGR);
@@ -139,17 +137,14 @@
 	 return uiMR;
  }
 
-
  Material* Scene::AddSpriteMaterial(std::string idBase, std::string texturePath) {
 
 	 std::string texId = "tex.ui." + idBase;
 	 AddTexture(texId, texturePath);
-	 Material* mat = AddMaterial("mat.ui."+idBase, "Assets/Shaders/ui.hlsl", false);
+	 Material* mat = AddMaterial("mat.ui."+idBase, "Assets/Shaders/ui", false, false);
 	 mat->SetTexture(0, texId);
 	 return mat;
  }
-
- 
 
  Mesh* Scene::AddMesh(std::string id, std::string path) {
 	 GraphicResourceDesc d2 = GraphicResourceDesc();

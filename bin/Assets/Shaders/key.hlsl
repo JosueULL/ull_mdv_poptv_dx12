@@ -59,7 +59,7 @@ VertexShaderOutput VS_main(VertexShaderInput IN)
 	float3x3 rot = AngleAxis3x3(time.x, float3(0,1,0));
 	
 	output.position = mul(mvp, float4(mul(rot, IN.position.xyz), 1));
-	output.wNormal = mul(idata.transform, mul(rot, IN.normal));
+	output.wNormal = mul(idata.transform, float4(mul(rot, IN.normal),0)).xyz;
 	output.uv = IN.uv;
 
 	return output;

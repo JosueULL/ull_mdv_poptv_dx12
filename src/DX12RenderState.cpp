@@ -8,11 +8,11 @@
 using namespace Microsoft::WRL;
 
 ///////////////////////////////////////////////////////////////////////////////
-DX12RenderState* DX12RenderState::Create(ID3D12Device* device, std::string shaderPath, bool instancing)
+DX12RenderState* DX12RenderState::Create(ID3D12Device* device, std::string shaderPath, bool instancing, bool compileShaders)
 {
 	DX12RenderState* renderState = new DX12RenderState();
 	renderState->CreateRootSignature(device, instancing);
-	renderState->CreatePipelineState(device, shaderPath);
+	renderState->CreatePipelineState(device, shaderPath, compileShaders);
 	return renderState;
 }
 
@@ -44,7 +44,7 @@ void DX12RenderState::CreateRootSignature(ID3D12Device* device, bool instancing)
 	device->CreateRootSignature(0, rootBlob->GetBufferPointer(), rootBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 }
 
-void DX12RenderState::CreatePipelineState(ID3D12Device* device, std::string shaderPath)
+void DX12RenderState::CreatePipelineState(ID3D12Device* device, std::string shaderPath, bool compile)
 {
 	static const D3D12_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -54,22 +54,36 @@ void DX12RenderState::CreatePipelineState(ID3D12Device* device, std::string shad
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 
-	std::ifstream ifs(shaderPath);
-	_STL_ASSERT(ifs.good(), "Shader file doesn't exist");
-	std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-	const char* sc = content.c_str();
-
 	ComPtr<ID3DBlob> vertexShader, pixelShader, errorBlob;
-	D3DCompile(sc, strlen(sc),
-		"", nullptr, nullptr,
-		"VS_main", "vs_5_1", 0, 0, &vertexShader, &errorBlob);
-	if (errorBlob)
-		OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-	D3DCompile(sc, strlen(sc),
-		"", nullptr, nullptr,
-		"PS_main", "ps_5_1", 0, 0, &pixelShader, &errorBlob);
-	if (errorBlob)
-		OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+	if (compile) 
+	{
+		std::ifstream ifs(shaderPath);
+		_STL_ASSERT(ifs.good(), "Shader file doesn't exist");
+		std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+		const char* sc = content.c_str();
+
+		std::string debugTxt = ("Loading shader :" + shaderPath + "\n").c_str();
+		OutputDebugString(std::wstring(debugTxt.begin(), debugTxt.end()).c_str());
+
+		D3DCompile(sc, strlen(sc),
+			"", nullptr, nullptr,
+			"VS_main", "vs_5_1", 0, 0, &vertexShader, &errorBlob);
+		_STL_ASSERT(!errorBlob, (char*)errorBlob->GetBufferPointer());
+
+		D3DCompile(sc, strlen(sc),
+			"", nullptr, nullptr,
+			"PS_main", "ps_5_1", 0, 0, &pixelShader, &errorBlob);
+		_STL_ASSERT(!errorBlob, (char*)errorBlob->GetBufferPointer());
+	}
+	else { // Precompiled shaders
+		std::string vsPath = shaderPath + "_vs.cso";
+		if (FAILED(D3DReadFileToBlob(std::wstring(vsPath.begin(), vsPath.end()).c_str(), vertexShader.GetAddressOf())))
+			throw std::exception();
+		
+		std::string psPath = shaderPath + "_ps.cso";
+		if (FAILED(D3DReadFileToBlob(std::wstring(psPath.begin(), psPath.end()).c_str(), pixelShader.GetAddressOf())))
+			throw std::exception();
+	}
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.VS.BytecodeLength = vertexShader->GetBufferSize();

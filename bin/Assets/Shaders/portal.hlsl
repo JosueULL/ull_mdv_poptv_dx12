@@ -31,7 +31,7 @@ VertexShaderOutput VS_main(
 
 	float4x4 mvp = mul(mProj, mul(mView, mWorld));	
 	output.position = mul(mvp, float4(position.xyz, 1));
-	output.wNormal = mul(mWorld, normal);
+	output.wNormal = mul(mWorld, float4(normal, 0)).xyz;
 	output.uv = uv;
 
 	return output;

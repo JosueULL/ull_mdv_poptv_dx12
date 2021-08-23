@@ -3,7 +3,7 @@
 SimpleScene::SimpleScene() : Scene()
 {
 	AddTexture("tex.checker", "Assets/Textures/checker.jpg");	// Adds a new Texture to SceneResourcesDesc
-	Material* mat = AddMaterial("mat.checker", "Assets/Shaders/baseTexture.hlsl", false); // Adds a new Shader & Material to SceneResourcesDesc
+	Material* mat = AddMaterial("mat.checker", "Assets/Shaders/baseTexture", false, false); // Adds a new Shader & Material to SceneResourcesDesc
 	mat->SetTexture(0, "tex.checker"); 
 	AddMesh("mesh.cube", "Assets/Meshes/cube.obj"); // Adds a new Mesh to SceneResourcesDesc
 	SceneObject* obj = AddObject("myCube");	 // Adds a new CBuffer to SceneResourcesDesc

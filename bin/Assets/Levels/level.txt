@@ -22,6 +22,7 @@ START
 4 1 0
 END
 
+// X, Y, Rotation
 EXIT
 26 4 90
 END

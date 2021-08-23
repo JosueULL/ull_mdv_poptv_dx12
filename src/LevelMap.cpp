@@ -166,7 +166,7 @@ void LevelMap::InstantiateLevelContent(Scene* scene) {
         scene->AddMesh("mesh.level.key", "Assets/Meshes/key.obj");
         scene->AddTexture("texture.key", "Assets/Textures/key.jpg");
 
-        Material* matkey = scene->AddMaterial("mat.key", "Assets/Shaders/key.hlsl", true);
+        Material* matkey = scene->AddMaterial("mat.key", "Assets/Shaders/key.hlsl", true, true);
         matkey->SetTexture(0, "texture.key");
 
         int pickupCount = (int)pickups_.size();
@@ -185,7 +185,7 @@ void LevelMap::InstantiateLevelContent(Scene* scene) {
     if (enemies_.size() > 0) {
         scene->AddMesh("mesh.level.enemy", "Assets/Meshes/skull.obj");
         
-        Material* matEnemy = scene->AddMaterial("mat.enemy", "Assets/Shaders/skull.hlsl", true);
+        Material* matEnemy = scene->AddMaterial("mat.enemy", "Assets/Shaders/skull.hlsl", true, true);
         matEnemy->SetTexture(0, "texture.noise");
 
         int enemiesCount = (int)enemies_.size();
@@ -204,7 +204,7 @@ void LevelMap::InstantiateLevelContent(Scene* scene) {
     scene->AddMesh("mesh.level.exit", "Assets/Meshes/closedPortal.obj");
     scene->AddMesh("mesh.level.exit.open", "Assets/Meshes/portal.obj");
 
-    Material* exitMat = scene->AddMaterial("mat.level.exit", "Assets/Shaders/portal.hlsl", false);
+    Material* exitMat = scene->AddMaterial("mat.level.exit", "Assets/Shaders/portal.hlsl", false, true);
     exitMat->SetTexture(0, "texture.noise");
 
     SceneObject* exit = scene->AddObject("level.exit");
@@ -223,7 +223,7 @@ void LevelMap::InstantiateLevelContent(Scene* scene) {
 
     scene->AddTexture("texture.level", "Assets/Textures/rock.jpg");
 
-    Material* mat = scene->AddMaterial("mat.level", "Assets/Shaders/level.hlsl", true);
+    Material* mat = scene->AddMaterial("mat.level", "Assets/Shaders/level.hlsl", true, true);
     mat->SetTexture(0, "texture.level");
 
     for (auto const& x : pieces_)
@@ -266,7 +266,7 @@ void LevelMap::InstantiateLevelContent(Scene* scene) {
 
     // Random Vegetation -------------------------------------------------
     scene->AddMesh("mesh.level.weed", "Assets/Meshes/weed.obj");
-    Material* matVeg = scene->AddMaterial("mat.level", "Assets/Shaders/level.hlsl", true);
+    Material* matVeg = scene->AddMaterial("mat.level", "Assets/Shaders/level.hlsl", true, true);
     scene->AddTexture("texture.level.vegetation", "Assets/Textures/vegetation.png");
     matVeg->SetTexture(0, "texture.level.vegetation");
 

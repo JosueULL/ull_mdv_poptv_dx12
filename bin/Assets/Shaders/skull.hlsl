@@ -59,7 +59,7 @@ VertexShaderOutput VS_main(VertexShaderInput IN)
 	output.localPos = IN.position.xyz;
 	float4x4 mvp = mul(mProj, mul(mView, idata.transform));	
 	output.position = mul(mvp, float4(IN.position.xyz, 1));
-	output.wNormal = mul(idata.transform, IN.normal);
+	output.wNormal = mul(idata.transform, float4(IN.normal, 0)).xyz;
 	output.uv = IN.uv;
 
 	return output;

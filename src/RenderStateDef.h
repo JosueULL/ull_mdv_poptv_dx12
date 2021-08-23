@@ -5,4 +5,5 @@
 struct RenderStateDef {
 	std::string shaderPath;
 	bool instancing;
+	bool compileShader;
 };

@@ -52,6 +52,9 @@
     <ClCompile Include="..\src\GameUI.cpp">
       <Filter>DemoGame</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\SimpleScene.cpp">
+      <Filter>DemoGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ImageIO.h" />
@@ -125,6 +128,12 @@
       <Filter>DemoGame</Filter>
     </ClInclude>
     <ClInclude Include="..\src\MathUtil.h" />
+    <ClInclude Include="..\src\SimpleScene.h">
+      <Filter>DemoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BackEndRenderer.h">
+      <Filter>Backends</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Requisitos.txt" />
@@ -142,5 +151,39 @@
     <Filter Include="DemoGame">
       <UniqueIdentifier>{2c9ebc80-bdf3-4ade-ae64-2501d8f8edc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{00c52660-b4fa-43f8-a5a0-2033b70ee139}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\bin\Assets\Shaders\instancedTexture_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\instancedTexture_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\singleTexture_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\singleTexture_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\ui_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\ui_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bin\Assets\Shaders\common.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\src\singleCommon.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\bin\Assets\Shaders\instancedCommon.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -99,6 +99,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\BackEndRenderer.h" />
     <ClInclude Include="..\src\Camera.h" />
     <ClInclude Include="..\src\Common.h" />
     <ClInclude Include="..\src\Component.h" />
@@ -130,6 +131,10 @@
     <ClInclude Include="..\src\SceneObject.h" />
     <ClInclude Include="..\src\SceneResourcesDesc.h" />
     <ClInclude Include="..\src\RenderStateDef.h" />
+    <ClInclude Include="..\src\SimpleScene.h" />
+    <None Include="..\src\singleCommon.hlsli">
+      <FileType>Document</FileType>
+    </None>
     <ClInclude Include="..\src\Singleton.h" />
     <ClInclude Include="..\src\System.h" />
     <ClInclude Include="..\src\TestScene.h" />
@@ -164,6 +169,7 @@
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\SceneObject.cpp" />
     <ClCompile Include="..\src\SceneResourcesDesc.cpp" />
+    <ClCompile Include="..\src\SimpleScene.cpp" />
     <ClCompile Include="..\src\System.cpp" />
     <ClCompile Include="..\src\TestScene.cpp" />
     <ClCompile Include="..\src\Transform.cpp" />
@@ -172,6 +178,48 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Requisitos.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\bin\Assets\Shaders\singleTexture_ps.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS_main</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SystemDrive)\%(Directory)\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\singleTexture_vs.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_main</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SystemDrive)\%(Directory)\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\ui_ps.hlsl">
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SystemDrive)\%(Directory)\%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS_main</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\ui_vs.hlsl">
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SystemDrive)\%(Directory)\%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_main</EntryPointName>
+    </FxCompile>
+    <None Include="..\bin\Assets\Shaders\instancedCommon.hlsli">
+      <FileType>Document</FileType>
+    </None>
+    <FxCompile Include="..\bin\Assets\Shaders\instancedTexture_ps.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS_main</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SystemDrive)\%(Directory)\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\bin\Assets\Shaders\instancedTexture_vs.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_main</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SystemDrive)\%(Directory)\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bin\Assets\Shaders\common.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
