@@ -94,9 +94,6 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> renderTargetDescriptorHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> depthStencilDescriptorHeap_;
 
-	
-	virtual void InitializeImpl (ID3D12GraphicsCommandList* uploadCommandList);
-	
 private:
 
 	struct SharedBuffer {

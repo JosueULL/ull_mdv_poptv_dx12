@@ -302,6 +302,7 @@ void DX12Renderer::DrawInstancedMeshes(const FrameGraph* frameGraph, ID3D12Graph
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////
 void DX12Renderer::SetRenderState(std::string renderStateId, ID3D12GraphicsCommandList* commandList) {
 	_STL_ASSERT(resRenderStates_.find(renderStateId) != resRenderStates_.end(), "RenderState couldn't be found. Make sure the material as a valid shader set");
 	DX12RenderState* renderState = resRenderStates_[renderStateId];
@@ -311,7 +312,6 @@ void DX12Renderer::SetRenderState(std::string renderStateId, ID3D12GraphicsComma
 		commandList->SetPipelineState(currentRenderState_->pipelineState.Get());
 	}
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 void DX12Renderer::UpdateCBuffer(const FrameGraphCBuffer& cbuffer, ID3D12GraphicsCommandList* commandList)
@@ -323,6 +323,7 @@ void DX12Renderer::UpdateCBuffer(const FrameGraphCBuffer& cbuffer, ID3D12Graphic
 	commandList->SetGraphicsRootConstantBufferView(cbuffer.RootIndex, cBuffer.slotData[GetQueueSlot()]->GetGPUVirtualAddress());
 }
 
+///////////////////////////////////////////////////////////////////////////////
 void DX12Renderer::UpdateSharedBuffer(ID3D12GraphicsCommandList* commandList) {
 	sharedBuffer.Update(GetQueueSlot(), &sharedBufferData);
 	commandList->SetGraphicsRootConstantBufferView(3, sharedBuffer.slotData[GetQueueSlot()]->GetGPUVirtualAddress());
@@ -444,7 +445,7 @@ next back buffer and also signal the fence for the current queue slot entry.
 */
 void DX12Renderer::Present ()
 {
-	swapChain_->Present (1, 0);
+	swapChain_->Present(1, 0);
 
 	// Mark the fence for the current frame.
 	const auto fenceValue = currentFenceValue_;
@@ -492,11 +493,6 @@ void DX12Renderer::Initialize (const Window &window)
 	CreateDefaultRenderStates();
 
 	sharedBuffer = DX12Buffer::Create(device_.Get(), GetQueueSlotCount(), sizeof(SharedBuffer), &sharedBufferData, "SharedBuffer");
-}
-
-///////////////////////////////////////////////////////////////////////////////
-void DX12Renderer::InitializeImpl (ID3D12GraphicsCommandList * /*uploadCommandList*/)
-{
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -627,6 +623,7 @@ void DX12Renderer::LoadResources(const SceneResourcesDesc& sceneRes) {
 		DX12Buffer cBuffer = DX12Buffer::Create(device_.Get(), GetQueueSlotCount(), cbDef->size, cbDef->ptr, name);
 		resConstantBuffers_[res.Id] = cBuffer;
 	}
+
 	for (const GraphicResourceDesc& res : sceneRes.InstanceBuffers)
 	{
 		InstanceBufferDef* ibDef = static_cast<InstanceBufferDef*>(res.Data);
@@ -638,6 +635,7 @@ void DX12Renderer::LoadResources(const SceneResourcesDesc& sceneRes) {
 		iBuffer.instanceCount = ibDef->instanceCount;
 		resInstanceBuffers_[res.Id] = iBuffer;
 	}
+
 	for (const GraphicResourceDesc& res : sceneRes.RenderStates)
 	{
 		RenderStateDef* sDef = static_cast<RenderStateDef*>(res.Data);
