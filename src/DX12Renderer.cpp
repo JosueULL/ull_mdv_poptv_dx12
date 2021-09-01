@@ -247,6 +247,7 @@ void DX12Renderer::DrawMeshes(const FrameGraphCamera& cam, const std::vector<Fra
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////
 void DX12Renderer::BindTextures(std::vector<Material::TextureBind> binds, ID3D12GraphicsCommandList* commandList)
 {
 	for (const auto& fgTextureBind : binds)

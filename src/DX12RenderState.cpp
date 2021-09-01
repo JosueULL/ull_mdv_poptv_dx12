@@ -76,11 +76,15 @@ void DX12RenderState::CreatePipelineState(ID3D12Device* device, std::string shad
 	}
 	else { // Precompiled shaders
 		std::string vsPath = shaderPath + "_vs.cso";
-		if (FAILED(D3DReadFileToBlob(std::wstring(vsPath.begin(), vsPath.end()).c_str(), vertexShader.GetAddressOf())))
+		std::ifstream ifs(vsPath);
+		_STL_ASSERT(ifs.good(), "Shader file doesn't exist");
+		if (FAILED(D3DReadFileToBlob(std::wstring(vsPath.begin(), vsPath.end()).c_str(), &vertexShader)))
 			throw std::exception();
 		
 		std::string psPath = shaderPath + "_ps.cso";
-		if (FAILED(D3DReadFileToBlob(std::wstring(psPath.begin(), psPath.end()).c_str(), pixelShader.GetAddressOf())))
+		std::ifstream ifs2(psPath);
+		_STL_ASSERT(ifs2.good(), "Shader file doesn't exist");
+		if (FAILED(D3DReadFileToBlob(std::wstring(psPath.begin(), psPath.end()).c_str(), &pixelShader)))
 			throw std::exception();
 	}
 
