@@ -16,7 +16,6 @@ DX12RenderState* DX12RenderState::Create(ID3D12Device* device, std::string shade
 	return renderState;
 }
 
-
 void DX12RenderState::CreateRootSignature(ID3D12Device* device, bool instancing) {
 	CD3DX12_ROOT_PARAMETER parameters[4];
 

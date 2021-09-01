@@ -33,6 +33,7 @@
 #include "BackEndRenderer.h"
 #include "DX12Buffer.h"
 #include "DX12RenderState.h"
+#include "Material.h"
 
 class Mesh;
 class Texture;
@@ -122,6 +123,8 @@ private:
 	void DrawMesh(std::string id, ID3D12GraphicsCommandList* commandList, int instanceCount);
 	void DrawMeshes(const FrameGraphCamera& cam, const std::vector<FrameGraphMesh>& meshes, ID3D12GraphicsCommandList* commandList);
 	void DrawInstancedMeshes(const FrameGraph* frameGraph, ID3D12GraphicsCommandList* commandList);
+
+	void BindTextures(std::vector<Material::TextureBind> binds, ID3D12GraphicsCommandList* commandList);
 
 	const Window* window_;
 

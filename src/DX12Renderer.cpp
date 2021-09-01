@@ -239,26 +239,30 @@ void DX12Renderer::DrawMeshes(const FrameGraphCamera& cam, const std::vector<Fra
 	{
 		SetRenderState(fgMesh.RenderState, commandList);
 
-		// ------------------------------------------------------------- BIND TEXTURES
-		for (const auto& fgTextureBind : fgMesh.TextureBinds)
-		{
-			_STL_ASSERT(resTextures_.find(fgTextureBind.Id) != resTextures_.end(), "Texture with given Id couldn't be found");
-			DX12Texture texture = resTextures_[fgTextureBind.Id];
-			UINT rootIndex = fgTextureBind.RootIndex;
-
-			// Set the descriptor heap containing the texture srv
-			ID3D12DescriptorHeap* heaps[] = { texture.srvDescriptorHeap.Get() };
-			commandList->SetDescriptorHeaps(1, heaps);
-
-			// Set slot 0 of our root signature to point to our descriptor heap with
-			// the texture SRV
-			commandList->SetGraphicsRootDescriptorTable(rootIndex,
-				texture.srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-		}
+		BindTextures(fgMesh.TextureBinds, commandList);
 
 		UpdateCBuffer(fgMesh.CBuffer, commandList);
 
 		DrawMesh(fgMesh.Id, commandList, 1);
+	}
+}
+
+void DX12Renderer::BindTextures(std::vector<Material::TextureBind> binds, ID3D12GraphicsCommandList* commandList)
+{
+	for (const auto& fgTextureBind : binds)
+	{
+		_STL_ASSERT(resTextures_.find(fgTextureBind.Id) != resTextures_.end(), "Texture with given Id couldn't be found");
+		DX12Texture texture = resTextures_[fgTextureBind.Id];
+		UINT rootIndex = fgTextureBind.RootIndex;
+
+		// Set the descriptor heap containing the texture srv
+		ID3D12DescriptorHeap* heaps[] = { texture.srvDescriptorHeap.Get() };
+		commandList->SetDescriptorHeaps(1, heaps);
+
+		// Set slot 0 of our root signature to point to our descriptor heap with
+		// the texture SRV
+		commandList->SetGraphicsRootDescriptorTable(rootIndex,
+			texture.srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 	}
 }
 
@@ -275,22 +279,7 @@ void DX12Renderer::DrawInstancedMeshes(const FrameGraph* frameGraph, ID3D12Graph
 	{
 		SetRenderState(fgMesh.RenderState, commandList);
 
-		// ------------------------------------------------------------ - BIND TEXTURES
-		for (const auto& fgTextureBind : fgMesh.TextureBinds)
-		{
-			_STL_ASSERT(resTextures_.find(fgTextureBind.Id) != resTextures_.end(), "Texture with given Id couldn't be found");
-			DX12Texture texture = resTextures_[fgTextureBind.Id];
-			UINT rootIndex = fgTextureBind.RootIndex;
-
-			// Set the descriptor heap containing the texture srv
-			ID3D12DescriptorHeap* heaps[] = { texture.srvDescriptorHeap.Get() };
-			commandList->SetDescriptorHeaps(1, heaps);
-
-			// Set slot 0 of our root signature to point to our descriptor heap with
-			// the texture SRV
-			commandList->SetGraphicsRootDescriptorTable(rootIndex,
-				texture.srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-		}
+		BindTextures(fgMesh.TextureBinds, commandList);
 
 		// Update Instance buffer
 		_STL_ASSERT(resInstanceBuffers_.find(fgMesh.CBuffer.Id) != resInstanceBuffers_.end(), "Instance Buffer with given Id couldn't be found");
